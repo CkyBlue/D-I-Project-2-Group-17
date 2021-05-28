@@ -9,7 +9,7 @@ void setup()
 uint8_t state = 0;
 // 0 - OFF, 1 - Manual Red Strobe, 2 - Manual White Strobe, 3 - Automatic Red Strobe, 4 - Automatic White Strobe
 
-bool isBraking(){}
+//bool isBraking(){}
 
 int strobeDelay = 500;
 int updateDelay = 50;
@@ -25,6 +25,8 @@ void strobe(){
         } else { M5.dis.drawpix(1, 0x000000); }
 }
 
+//void strobe(CRGB color){}
+
 void loop()
 {
     if (M5.Btn.wasPressed())
@@ -33,20 +35,24 @@ void loop()
         {
         case 0: // OFF
             {Serial.printf("Mode is off\n");}
-
+            delay(5000);
             break;
         case 1: // Manual Red Strobe
             {Serial.printf("Manual Red mode\n");}
             strobe();
+            delay(5000);
             break;
         case 2: // Manual White Strobe
             {Serial.printf("Manual White mode\n");}
+            delay(5000);
             break;
         case 3: // Automatic Red Strobe
             {Serial.printf("Automatic Red mode\n");}
+            delay(5000);
             break;
         case 4: // Automatic White Strobe
             {Serial.printf("Automatic White mode\n");}
+            delay(5000);
             break;
         default:
             break;
