@@ -66,7 +66,7 @@ void loop()
             Serial.printf("Black & White");
             break;
         case 4:
-            M5.dis.MoveDisPlayBuff(2, 1);
+            //M5.dis.MoveDisPlayBuff(2, 1);
             Serial.printf("Offset");
             break;
         default:
@@ -75,7 +75,7 @@ void loop()
         M5.dis.displaybuff(DisBuff);
 
         FSM++;
-        if (FSM >= 5)
+        if (FSM >= 4)
         {
             FSM = 0;
         }
