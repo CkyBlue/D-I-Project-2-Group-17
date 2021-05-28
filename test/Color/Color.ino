@@ -14,23 +14,23 @@ void setBuff(uint8_t Rdata, uint8_t Gdata, uint8_t Bdata)
     }
 }
 
-void setSpecial(uint8_t Rdata, uint8_t Gdata, uint8_t Bdata)
-{
-    DisBuff[0] = 0x05;
-    DisBuff[1] = 0x05;
-    for (int i = 0; i < 25; i++)
-    {
-      if ((i+1)%5 == 0 || i < 5){
-        DisBuff[2 + i * 3 + 0] = Rdata;
-        DisBuff[2 + i * 3 + 1] = Gdata;
-        DisBuff[2 + i * 3 + 2] = Bdata;
-        } else {
-        DisBuff[2 + i * 3 + 0] = 0;
-        DisBuff[2 + i * 3 + 1] = 0;
-        DisBuff[2 + i * 3 + 2] = 0; 
-        }
-    }
-}
+//void setSpecial(uint8_t Rdata, uint8_t Gdata, uint8_t Bdata)
+//{
+//    DisBuff[0] = 0x05;
+//    DisBuff[1] = 0x05;
+//    for (int i = 0; i < 25; i++)
+//    {
+//      if ((i+1)%5 == 0 || i < 5){
+//        DisBuff[2 + i * 3 + 0] = Rdata;
+//        DisBuff[2 + i * 3 + 1] = Gdata;
+//        DisBuff[2 + i * 3 + 2] = Bdata;
+//        } else {
+//        DisBuff[2 + i * 3 + 0] = 0;
+//        DisBuff[2 + i * 3 + 1] = 0;
+//        DisBuff[2 + i * 3 + 2] = 0; 
+//        }
+//    }
+//}
 
 void setup()
 {
@@ -62,7 +62,7 @@ void loop()
             Serial.printf("Blue");
             break;
         case 3:
-            setSpecial(0x255, 0x255, 0x255);
+            //setSpecial(0x255, 0x255, 0x255);
             Serial.printf("Black & White");
             break;
         case 4:
@@ -75,7 +75,7 @@ void loop()
         M5.dis.displaybuff(DisBuff);
 
         FSM++;
-        if (FSM >= 4)
+        if (FSM >= 3)
         {
             FSM = 0;
         }

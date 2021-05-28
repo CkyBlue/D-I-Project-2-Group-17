@@ -19,9 +19,9 @@ uint8_t strobeCount = 0;
 bool strobeFlag = false;
 void strobe(){
        strobeCount++;
-       if (strobeCount >= strobeSteps){ strobeCount = 0; strobeFlag = !strobeFlag;}
+       if (strobeCount >= strobeSteps){ strobeCount = 0; strobeFlag = !strobeFlag; Serial.printf("Change color");}
        if (strobeFlag){
-       M5.dis.drawpix(1, 0xf00000);
+      M5.dis.drawpix(1, 0xf00000);
         } else { M5.dis.drawpix(1, 0x000000); }
 }
 
@@ -29,39 +29,38 @@ void strobe(){
 
 void loop()
 {
-    if (M5.Btn.wasPressed())
-    {
+    if (M5.Btn.wasPressed()){
+        state++;
+        if (state >= 5){ state = 0; }
+        Serial.printf("Changed state");
+     }
+    
         switch (state)
         {
         case 0: // OFF
-            {Serial.printf("Mode is off\n");}
-            delay(5000);
+           // {Serial.printf("Mode is off\n");}
+            //delay(5000);
             break;
         case 1: // Manual Red Strobe
-            {Serial.printf("Manual Red mode\n");}
+            //{Serial.printf("Manual Red mode\n");}
             strobe();
-            delay(5000);
+            //delay(5000);
             break;
         case 2: // Manual White Strobe
-            {Serial.printf("Manual White mode\n");}
-            delay(5000);
+           // {Serial.printf("Manual White mode\n");}
+            //delay(5000);
             break;
         case 3: // Automatic Red Strobe
-            {Serial.printf("Automatic Red mode\n");}
-            delay(5000);
+            //{Serial.printf("Automatic Red mode\n");}
+            //delay(5000);
             break;
         case 4: // Automatic White Strobe
-            {Serial.printf("Automatic White mode\n");}
-            delay(5000);
+            //{Serial.printf("Automatic White mode\n");}
+            //delay(5000);
             break;
         default:
             break;
         }
-
-
-        state++;
-        if (state >= 5){ state = 0; }
-    }
 
     delay(updateDelay);
     M5.update();
