@@ -1,4 +1,5 @@
-#include "M5Atom.h"
+#include <M5Atom.h>
+
 void setup()
 {
     M5.begin(true, false, true);
@@ -18,15 +19,19 @@ void loop()
             break;
         case 1:
             //STATE 1 Manual Rear strobe (RED)
+            strobe(CRGB::red);
             break;
         case 2:
             //STATE 2  Manual Front strobe (WHITE)
+            strobe(CRGB::white);
             break;
         case 3:
             //STATE 3 Automatic Rear Mode Rear (RED)
+            //strobe(CRGB::white);
             break;
         case 4:
             //Automatic Front Mode Rear (WHITE)
+            strobe();
             break;
         default:
             break;
