@@ -1,3 +1,5 @@
+#include <M5Atom.h>
+
 /****************************************************************
  * 
  * This Example is used to test leds
