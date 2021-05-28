@@ -20,19 +20,20 @@ void loop()
         switch (state)
         {
         case 0: // OFF
+            {Serial.printf("Mode is off\n");}
 
             break;
         case 1: // Manual Red Strobe
-
+            {Serial.printf("Manual Red mode\n");}
             break;
         case 2: // Manual White Strobe
-
+            {Serial.printf("Manual White mode\n");}
             break;
         case 3: // Automatic Red Strobe
-
+            {Serial.printf("Automatic Red mode\n");}
             break;
         case 4: // Automatic White Strobe
-
+            {Serial.printf("Automatic White mode\n");}
             break;
         default:
             break;
