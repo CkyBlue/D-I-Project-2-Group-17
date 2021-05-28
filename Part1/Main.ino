@@ -1,5 +1,4 @@
 #include <M5Atom.h>
-
 void setup()
 {
     M5.begin(true, false, true);
@@ -23,7 +22,7 @@ void loop()
             break;
         case 2:
             //STATE 2  Manual Front strobe (WHITE)
-            strobe(CRGB::white);
+            strobe((CRGB) CHSV(255, 255, 255));
             break;
         case 3:
             //STATE 3 Automatic Rear Mode Rear (RED)
@@ -31,7 +30,7 @@ void loop()
             break;
         case 4:
             //Automatic Front Mode Rear (WHITE)
-            strobe();
+            //strobe();
             break;
         default:
             break;
