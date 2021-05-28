@@ -1,42 +1,36 @@
+#include "M5Atom.h"
 void setup()
 {
     M5.begin(true, false, true);
 }
 
-uint8_t FSM = 0;
+uint8_t FSM = 1;
 
-void loop()
-{
 void loop()
 {
     if (M5.Btn.wasPressed())
     {
-
         switch (FSM)
         {
         case 0:
-            setBuff(0x40, 0x00, 0x00);
+            //OFF STATE
             break;
         case 1:
-            setBuff(0x00, 0x40, 0x00);
+            //STATE 1 Manual Rear strobe (RED)
             break;
         case 2:
-            setBuff(0x00, 0x00, 0x40);
+            //STATE 2  Manual Front strobe (WHITE)
             break;
         case 3:
-            setBuff(0x20, 0x20, 0x20);
+            //STATE 3 Automatic Rear Mode Rear (RED)
+            break;
+        case 4:
+            //Automatic Front Mode Rear (WHITE)
             break;
         default:
             break;
         }
-        M5.dis.displaybuff(DisBuff);
-
         FSM++;
-        if (FSM >= 4)
-        {
-            FSM = 0;
-        }
+        if(FSM>=5) FSM=0;
     }
-
-}
 }
