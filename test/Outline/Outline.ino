@@ -7,7 +7,7 @@ void setup()
 }
 
 uint8_t state = 0;
-// 0 - OFF, 1 - Manual Red Strobe, 2 - Manual White Strobe, 4 - Automatic Red Strobe, 5 - Automatic White Strobe
+// 0 - OFF, 1 - Manual Red Strobe, 2 - Manual White Strobe, 3 - Automatic Red Strobe, 4 - Automatic White Strobe
 
 bool isBraking(){}
 
