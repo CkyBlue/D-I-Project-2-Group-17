@@ -3,9 +3,10 @@ void setup()
 {
     M5.begin(true, false, true);
 }
+void Strobe(CRGB color);
 
-uint8_t FSM = 1;
 
+int FSM = 1;
 void loop()
 {
     if (M5.Btn.wasPressed())
@@ -32,5 +33,23 @@ void loop()
         }
         FSM++;
         if(FSM>=5) FSM=0;
+    }
+}
+
+strobe(CRGB color) {
+
+    int strobeDelay = 500;
+    int updateDelay = 50;
+
+    int strobeSteps = strobeDelay/updateDelay;
+    uint8_t strobeCount = 0;
+    bool strobeFlag = false;
+
+    strobeCount++;
+    if (strobeCount >= strobeSteps){ strobeCount = 0; strobeFlag = !strobeFlag;}
+    if (strobeFlag){
+       M5.dis.fillpix(0xf00000);
+    } else { 
+        M5.dis.drawpix(1, 0x000000); 
     }
 }
