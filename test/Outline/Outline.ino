@@ -56,45 +56,52 @@ void loop()
 {
     if (M5.Btn.wasPressed())
     {
-        switch (state)
-        {
-        case 0: // OFF
-        {
-            Serial.printf("Mode is off\n");
-            M5.dis.clear();
-            break;
-        }
-        case 1: // Manual Red Strobe
-        {
-            Serial.printf("Manual Red mode\n");
-            strobe(255, 0, 0);
-            break;
-        }
-        case 2: // Manual White Strobe
-        {
-            Serial.printf("Manual White mode\n");
-            strobe(255, 255, 255);
-            break;
-        }
-        case 3: // Automatic Red Strobe
-        {
-            Serial.printf("Automatic Red mode\n");
-            break;
-        }
-        case 4: // Automatic White Strobe
-        {
-            Serial.printf("Automatic White mode\n");
-            break;
-        }
-        default:
-            break;
-        }
-
         state++;
         if (state >= 5)
         {
             state = 0;
         }
+        Serial.printf("Changed state");
+    }
+
+    switch (state)
+    {
+    case 0: // OFF
+    {
+        Serial.printf("Mode is off\n");
+        M5.dis.clear();
+        break;
+    }
+    case 1: // Manual Red Strobe
+    {
+        Serial.printf("Manual Red mode\n");
+        strobe(255, 0, 0);
+        break;
+    }
+    case 2: // Manual White Strobe
+    {
+        Serial.printf("Manual White mode\n");
+        strobe(255, 255, 255);
+        break;
+    }
+    case 3: // Automatic Red Strobe
+    {
+        Serial.printf("Automatic Red mode\n");
+        break;
+    }
+    case 4: // Automatic White Strobe
+    {
+        Serial.printf("Automatic White mode\n");
+        break;
+    }
+    default:
+        break;
+    }
+
+    state++;
+    if (state >= 5)
+    {
+        state = 0;
     }
 
     delay(updateDelay);
