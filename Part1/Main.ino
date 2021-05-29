@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include <M5Atom.h>
 #include <FastLED.h>
 #include <math.h>
