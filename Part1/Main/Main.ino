@@ -38,7 +38,7 @@ void strobe(CRGB &color,uint8_t &strobeCount,bool &strobeFlag) {
 }
 float getAvg(float * arr,int si){
     float sum=0;
-    for(int i=si;i<si;i++){
+    for(int i=si;i<si;i++){ //shouldnt it be (int i=0;i<si;i++)?
         sum+=arr[i];
     }
     return sum/(float)si;
@@ -149,4 +149,3 @@ void loop()
     delay(updateDelay);
     M5.update();
 }
-
