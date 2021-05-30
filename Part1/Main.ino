@@ -12,10 +12,7 @@ using namespace std;
 int FSM = 1;
 float U, acc, percentacc;
 bool firstTime;                     //the first time acceleration data is retrieved
-float accX = 0, accY = 0, accZ = 0; //acceleration values of the device
-bike MA[array_size];//bike objects over 5 timestamps
 CRGB color;
-strobe stro;
 class bike
 {
     //this needs to contain the 3 x,y,and z acceleration values of the device, and a method to calculate MMA.
@@ -57,8 +54,10 @@ public:
 
     bool isbraking()
     {
-        //max a biker can pedal is 0.4g, so any moving average over 0.4 is braking
-        if(abs(MMAX)>0.4||abs(MMAY)>0.4||abs(MMAZ)>0.4){
+        //max a biker can pedal is 0.5g, so any moving average over 0.5 is braking
+        float mag=sqrt(pow(MMAX,2)+pow(MMAY,2)+pow(MMAZ,2))-1;
+        if(mag>0.5){
+
             return true;
         } else {
             return false;
@@ -112,7 +111,8 @@ public:
         return color;
     }
 };
-
+bike MA[array_size];
+strobe stro;
 float getAvg(float *arr, int si)
 {
     float sum = 0;
