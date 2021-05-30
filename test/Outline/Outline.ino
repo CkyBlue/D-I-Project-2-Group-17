@@ -114,12 +114,6 @@ void loop()
         break;
     }
 
-    state++;
-    if (state >= 5)
-    {
-        state = 0;
-    }
-
     delay(updateDelay);
     M5.update();
 }

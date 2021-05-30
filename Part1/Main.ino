@@ -135,6 +135,8 @@ void setup()
     percentacc = update_delay / 1000 * percentchange / 2;
 }
 
+int fade = 0;
+
 void loop()
 {
     switch (FSM)
@@ -174,8 +176,11 @@ void loop()
                 MA[i].setMMA(MA[i-1]);
             }
             //check for braking
-            if (MA[i].isbraking())
+            if (MA[i].isbraking() || fade > 0)
             {
+                if (MA[i].isbraking()) fade = 20;
+                else {fade--;};
+
                 M5.dis.fillpix(stro.getColor());
             }
             else
