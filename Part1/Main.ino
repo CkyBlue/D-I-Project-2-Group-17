@@ -1,16 +1,15 @@
-#include <Arduino.h>
 #include <M5Atom.h>
 #include <FastLED.h>
 #include <math.h>
 #include <thread>
 #define percentchange 10 //the percentage change over 2 seconds for it to be braking
 #define update_delay 50
-#define strobe_delay 500
+#define strobe_delay 750
 #define array_size 5
 using namespace std;
 
 //Initialize Variables
-int FSM = 1;
+int FSM = 0;
 float U, acc, percentacc;
 bool firstTime;                     //the first time acceleration data is retrieved
 int i;bool x;
@@ -58,8 +57,9 @@ public:
     {
         //max a biker can pedal is 0.5g, so any moving average over 0.5 is braking
         float mag=sqrt(pow(MMAX,2)+pow(MMAY,2)+pow(MMAZ,2))-1;
-        if(mag>0.5){
-
+        Serial.printf("%.2f\n", mag);
+        if(mag>0.4){
+            Serial.printf()
             return true;
         } else {
             return false;
@@ -146,7 +146,7 @@ void loop()
     case 1:
         {
         //STATE 1 Manual Rear strobe (RED)
-        stro.setColor(CRGB::Red);
+        stro.setColor(CRGB::Green);
         stro.strobeLight();
         }
         break;
@@ -161,7 +161,7 @@ void loop()
         {
         //STATE 3 Automatic Rear Mode Rear (RED)
         //LEDs are solid during a braking event. Return to strobe when riding
-        stro.setColor(CRGB::Red);
+        stro.setColor(CRGB::Green);
         x = true;
         i = 0;
         while (x)
