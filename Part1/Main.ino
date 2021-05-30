@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include <M5Atom.h>
 #include <FastLED.h>
 #include <math.h>
@@ -12,6 +13,7 @@ using namespace std;
 int FSM = 1;
 float U, acc, percentacc;
 bool firstTime;                     //the first time acceleration data is retrieved
+int i;bool x;
 CRGB color;
 class bike
 {
@@ -136,24 +138,32 @@ void loop()
     switch (FSM)
     {
     case 0:
+        {
         //OFF STATE
+        M5.dis.clear();
+        }
         break;
     case 1:
+        {
         //STATE 1 Manual Rear strobe (RED)
         stro.setColor(CRGB::Red);
         stro.strobeLight();
+        }
         break;
     case 2:
+        {
         //STATE 2  Manual Front strobe (WHITE)
         stro.setColor(CRGB::White);
         stro.strobeLight();
+        }
         break;
     case 3:
+        {
         //STATE 3 Automatic Rear Mode Rear (RED)
         //LEDs are solid during a braking event. Return to strobe when riding
         stro.setColor(CRGB::Red);
-        bool x = true;
-        int i = 0;
+        x = true;
+        i = 0;
         while (x)
         {
             if(i==0){
@@ -183,11 +193,13 @@ void loop()
             delay(update_delay);
             M5.update();
         }
+        }
         break;
     case 4:
+        {
         stro.setColor(CRGB::White);
-        bool x = true;
-        int i = 0;
+        x = true;
+        i = 0;
         while (x)
         {
             if(i==0){
@@ -216,6 +228,7 @@ void loop()
             }
             delay(update_delay);
             M5.update();
+        }
         }
         break;
     default:
