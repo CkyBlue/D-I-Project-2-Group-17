@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include <M5Atom.h>
 #include <FastLED.h>
 #include <math.h>
@@ -56,10 +57,10 @@ public:
     bool isbraking()
     {
         //max a biker can pedal is 0.5g, so any moving average over 0.5 is braking
-        float mag=sqrt(pow(MMAX,2)+pow(MMAY,2)+pow(MMAZ,2))-1;
+        float mag=abs(sqrt(pow(MMAX,2)+pow(MMAY,2)+pow(MMAZ,2))-1);
         Serial.printf("%.2f\n", mag);
         if(mag>0.4){
-            Serial.printf()
+            //Serial.print("TRUE");
             return true;
         } else {
             return false;
@@ -129,6 +130,7 @@ float getAvg(float *arr, int si)
 void setup()
 {
     M5.begin(true, false, true);
+    M5.IMU.Init();
     firstTime = true;
     percentacc = update_delay / 1000 * percentchange / 2;
 }
