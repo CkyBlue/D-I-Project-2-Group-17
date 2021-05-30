@@ -45,7 +45,7 @@ void loop()
 
    Serial.printf("%.2f   %.2f   %.2f \n",accX * 1000,accY * 1000, accZ * 1000);
 
-    if (overDecelThreshold(accX, state) || accXFade > 0){
+/*     if (overDecelThreshold(accX, state) || accXFade > 0){
         if (overDecelThreshold(accX, state)) accXFade = 5;
         else {accXFade--;}
         
@@ -58,7 +58,7 @@ void loop()
         M5.dis.drawpix(5, 0xff0000);
         M5.dis.drawpix(5 + 4, 0xff0000);
         Serial.printf("Flash Outside Red\n");
-    }
+    } */
 
     if (overDecelThreshold(accY, state) || accYFade > 0){
         if (overDecelThreshold(accY, state)) accYFade = 5;
@@ -75,7 +75,7 @@ void loop()
         Serial.printf("Flash Outside Green\n");
     }
 
-    if (overDecelThreshold(accZ, state) || accZFade > 0){
+/*     if (overDecelThreshold(accZ, state) || accZFade > 0){
         if (overDecelThreshold(accZ, state)) accZFade = 5;
         else {accZFade--;}
         
@@ -88,7 +88,7 @@ void loop()
         M5.dis.drawpix(5*3, 0x0000ff);
         M5.dis.drawpix(5*3 + 4, 0x0000ff);
         Serial.printf("Flash Outside Blue\n");
-    }
+    } */
 
     delay(updateDelay);
     M5.update();

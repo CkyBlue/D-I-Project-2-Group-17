@@ -1,5 +1,8 @@
 #include "M5Atom.h"
 
+unsigned long prevTime = 0;
+unsigned long currentTime = 0;
+
 void setup()
 {
     M5.begin(true, true, true);
@@ -33,12 +36,24 @@ uint8_t strobeCount = 0;
 bool strobeFlag = false;
 void strobe(uint8_t r, uint8_t g, uint8_t b)
 {
-    strobeCount++;
-    if (strobeCount >= strobeSteps)
-    {
-        strobeCount = 0;
-        strobeFlag = !strobeFlag;
-        if (strobeFlag)
+//    strobeCount++;
+//    if (strobeCount >= strobeSteps)
+//    {
+//        strobeCount = 0;
+//        strobeFlag = !strobeFlag;
+//        if (strobeFlag)
+//        {
+//            setBuff(r, g, b);
+//            M5.dis.displaybuff(DisBuff);
+//        }
+//        else
+//        {
+//            M5.dis.clear();
+//        }
+
+    currentTime = millis();
+    if (currentTime - prevTime > strobeDelay){
+         if (strobeFlag)
         {
             setBuff(r, g, b);
             M5.dis.displaybuff(DisBuff);
@@ -47,7 +62,8 @@ void strobe(uint8_t r, uint8_t g, uint8_t b)
         {
             M5.dis.clear();
         }
-    }
+        prevTime = millis();
+      }
 }
 
 //void strobe(CRGB color){}
