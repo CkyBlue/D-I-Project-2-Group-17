@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include <M5Atom.h>
 #include <FastLED.h>
 #include <math.h>
@@ -59,7 +58,7 @@ public:
     bool isbraking()
     {
         //max a biker can pedal is 0.4g, so any moving average over 0.4 is braking
-        if(MMAX>0.4||MMAY>0.4||MMAZ>0.4){
+        if(abs(MMAX)>0.4||abs(MMAY)>0.4||abs(MMAZ)>0.4){
             return true;
         } else {
             return false;
