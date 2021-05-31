@@ -37,8 +37,8 @@ void loop()
     Serial.printf("Temperature : %.2f C \n", temp);*/
 
     //M5.dis.fillpix(led);
-    Serial.printf("%.2f \n", 1000 * (accY - sin(roll*rad));
-    Serial.printf("%.2f \n", 1000 * (accZ - cos(roll*rad));
+    Serial.printf("%.2f \n", 1000 * (accY - sin(roll*rad)));
+    Serial.printf("%.2f \n", 1000 * (accZ - cos(roll*rad)));
     //Serial.printf("%.2f \n", 1000 * (accY - sin(-roll*2/r_rand)) );
 
     delay(50);
