@@ -31,6 +31,11 @@ void loop()
     for (int i=0; i < 5; i++){
       int height = heights[idx + i];
       M5.dis.drawpix(5*(5 - height) + i, 0xffffff);  
+      M5.dis.drawpix(5*(5 - height-1) + i, 0xffffff);
+      M5.dis.drawpix(5*(5 - height-2) + i, 0xffffff);
+      M5.dis.drawpix(5*(5 - height-3) + i, 0xffffff);
+      M5.dis.drawpix(5*(5 - height-4) + i, 0xffffff);
+      //M5.dis.drawpix(5*(5 - height-5) + i, 0xffffff);
     }
 
     delay(500);
