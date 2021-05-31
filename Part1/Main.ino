@@ -56,10 +56,10 @@ public:
 
     bool isbraking()
     {
-        //max a biker can pedal is 0.5g, so any moving average over 0.5 is braking
+        //max a biker can pedal is 0.07g, so any moving average over 0.07 is braking
         float mag=abs(sqrt(pow(MMAX,2)+pow(MMAY,2)+pow(MMAZ,2))-1);
         Serial.printf("%.2f\n", mag);
-        if(mag>0.4){
+        if(mag>0.07){
             //Serial.print("TRUE");
             return true;
         } else {
@@ -202,7 +202,49 @@ void loop()
         }
         }
         break;
+    
     case 4:
+        {
+        //STATE 3 Automatic Rear Mode Rear (RED)
+        //LEDs are solid during a braking event. Return to strobe when riding
+        stro.setColor(CRGB::White);
+        x = true;
+        i = 0;
+        while (x)
+        {
+            if(i==0){
+                MA[i].setMMA(MA[0]); //fetch acceleration and set Moving average 
+            } else {
+                MA[i].setMMA(MA[i-1]);
+            }
+            //check for braking
+            if (MA[i].isbraking() || fade > 0)
+            {
+                if (MA[i].isbraking()) fade = 20;
+                else {fade--;};
+
+                M5.dis.fillpix(stro.getColor());
+            }
+            else
+            {
+                stro.strobeLight();
+            }
+            i++;
+            if (M5.Btn.wasPressed())
+            {
+                break;
+            }
+            if (i >= array_size)
+            {
+                MA[0]=MA[array_size-1];
+                i = 0;
+            }
+            delay(update_delay);
+            M5.update();
+        }
+        }
+        break;
+/*    case 4:
         {
         stro.setColor(CRGB::White);
         x = true;
@@ -237,7 +279,7 @@ void loop()
             M5.update();
         }
         }
-        break;
+        break;*/
     default:
         break;
     }
