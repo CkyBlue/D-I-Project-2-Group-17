@@ -178,6 +178,7 @@ void loop()
             //check for braking
             if (MA[i].isbraking() || fade > 0)
             {
+                Serial.printf("Fade %.2f", fade);
                 if (MA[i].isbraking()) fade = 20;
                 else {fade--;};
 
