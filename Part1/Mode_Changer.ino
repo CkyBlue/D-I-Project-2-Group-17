@@ -208,6 +208,7 @@ public:
 };
 
 SensorData tl;
+display ds;
 void getUnit()
 {
 }
@@ -228,9 +229,11 @@ void loop()
 {
     if (IMU6886Flag == true)
     {
-        tl.update();
-        tilt = tl.isTilted();
         tl.fetchAcc();
+        tilt = tl.isTilted();
+        Serial.print(tilt);
+        Serial.print(tl.isTap());
+        Serial.print('\n');
         if ((M5.Btn.wasPressed() || tl.isTap()) && (tilt == 'u'))
         {
             millisOfLastTiltUpdate = millis();
@@ -242,6 +245,7 @@ void loop()
                 {
                 case 0:
                     Serial.printf("screen activated\n");
+                    ds.displayTemperature();
                     positionChanged = false;
                     while (positionChanged == false)
                     {
@@ -345,4 +349,5 @@ void loop()
         Serial.printf("Temperature: %.2f °C \n", temp);
         millisOfLastTempUpdate = millis();
     }
+    delay(50);
 }
