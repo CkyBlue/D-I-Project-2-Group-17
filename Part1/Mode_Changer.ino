@@ -1,7 +1,13 @@
-#include "M5Atom.h"
+#include <M5Atom.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_NeoMatrix.h>
+#include <Adafruit_NeoPixel.h>
+#include <string>
+#include <iostream>
+#define PIN 27
 #define array_size 5
 #define LED_brightness 85
-
+using namespace std;
 float temp = 0;
 bool IMU6886Flag = true;
 bool isDownwards = false;
@@ -21,12 +27,14 @@ unsigned long currentMillis = 0;
 class SensorData
 {
 private:
-    float acZ[array_size];//aceleration Z for past 5 Timestamps
+    float acZ[array_size]; //aceleration Z for past 5 Timestamps
     float acZbef;
     int i;
     float accX, accY, accZ;
     float gyroX, gyroY, gyroZ;
     float pitch, roll, yaw;
+    float Activetemperature;
+
 public:
     SensorData()
     {
@@ -36,16 +44,25 @@ public:
         gyroX = 0;
         gyroY = 0;
         gyroZ = 0;
-        i=0;
+        Activetemperature = 0;
+        i = 0;
+    }
+    void update()
+    {
+        M5.IMU.getAhrsData(&pitch, &roll, &yaw);
+        M5.IMU.getAccelData(&accX, &accY, &accZ);
     }
     void fetchAcc()
     {
         M5.IMU.getAccelData(&accX, &accY, &accZ);
-        if(i>=array_size){//c
-            acZbef=acZ[array_size-1];//c
-            i=0;
-        } else {
-            acZ[i]=accZ;
+        if (i >= array_size)
+        {
+            acZbef = acZ[array_size - 1];
+            i = 0;
+        }
+        else
+        {
+            acZ[i] = accZ;
             i++;
         }
     }
@@ -53,17 +70,32 @@ public:
     {
         M5.IMU.getAhrsData(&pitch, &roll, &yaw);
     }
-    bool isTap(){//check if tapping
-        if(i==0){//use before
-            if(abs(acZ[i]-acZbef)/abs(acZbef)>0.03){
+    float getActiveTemp()
+    {
+        M5.IMU.getTempData(&Activetemperature);
+        return Activetemperature;
+    }
+    bool isTap()
+    { //check if tapping
+        if (i == 0)
+        { //use before
+            if (abs(acZ[i] - acZbef) / abs(acZbef) > 0.03)
+            {
                 return true;
-            } else {
+            }
+            else
+            {
                 return false;
             }
-        } else {
-            if(abs(acZ[i]-acZ[i-1])/abs(acZ[i-1])>0.03){
+        }
+        else
+        {
+            if (abs(acZ[i] - acZ[i - 1]) / abs(acZ[i - 1]) > 0.03)
+            {
                 return true;
-            } else {
+            }
+            else
+            {
                 return false;
             }
         }
@@ -118,12 +150,66 @@ public:
         }
     }
 };
-/*class Unit(){
+//scrolling text inspired by https://github.com/lukasmaximus89/M5Atom-Resources/blob/master/AtomScrollingText/AtomScrollingText.ino
+class display
+{
+private:
+    Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(5, 5, PIN,
+                                                   NEO_MATRIX_TOP + NEO_MATRIX_RIGHT +
+                                                       NEO_MATRIX_COLUMNS + NEO_MATRIX_PROGRESSIVE,
+                                                   NEO_GRB + NEO_KHZ800);
+    uint16_t color;
+    float temperature;
+    char unit;int x,pass;
+public:
+    display()
+    {
+        //farenheight C and kelvin
+        matrix.begin();
+        matrix.setTextWrap(false);
+        matrix.setBrightness(LED_brightness);
+        matrix.setTextColor(color);
+        color = matrix.Color(255, 255, 255);
+        x=0;
+        pass=0;
+        unit = 'C';
+    }
+    void changeUnit()
+    {
+        if(unit=='C'){
+            temperature+=273.15;
+            unit=='K';
+        } else if(unit=='K') {
+            temperature=(temperature-273.15)*9/5+32;
+            unit=='F';
+        } else {
+            temperature=(temperature-32)*5/9;
+            unit=='C';
+        }
+    }
+    void displayTemperature()
+    {
+        matrix.fillScreen(0);
+        matrix.setCursor(x, 0);
+        String u="";
+        u.concat(temperature);
+        u+=unit;
+        matrix.print(x);
+        if (--x < -36)
+        {
+            x = matrix.width();
+            if (++pass >= 3)
+                pass = 0;
+            matrix.setTextColor(color);
+        }
+        matrix.show();
+    }
     
-}*/
-SensorData tl;
-void getUnit() {
+};
 
+SensorData tl;
+void getUnit()
+{
 }
 
 void mode4()
@@ -138,21 +224,11 @@ void setup()
     else
         IMU6886Flag = true;
 }
-/*if (i == 0)
-            {
-                MA[i].setMMA(MA[0]); //fetch acceleration and set Moving average
-            }
-            else
-            {
-                MA[i].setMMA(MA[i - 1]);
-            }
-            */
-
-int i=0;
 void loop()
 {
     if (IMU6886Flag == true)
     {
+        tl.update();
         tilt = tl.isTilted();
         tl.fetchAcc();
         if ((M5.Btn.wasPressed() || tl.isTap()) && (tilt == 'u'))
