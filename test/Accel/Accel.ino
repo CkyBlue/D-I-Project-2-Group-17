@@ -1,97 +1,81 @@
 #include "M5Atom.h"
 
+uint8_t DisBuff[2 + 5 * 5 * 3];
+
+void setBuff(uint8_t Rdata, uint8_t Gdata, uint8_t Bdata)
+{
+    DisBuff[0] = 0x05;
+    DisBuff[1] = 0x05;
+    for (int i = 0; i < 25; i++)
+    {
+        DisBuff[2 + i * 3 + 0] = Rdata;
+        DisBuff[2 + i * 3 + 1] = Gdata;
+        DisBuff[2 + i * 3 + 2] = Bdata;
+    }
+}
+
 void setup()
 {
     M5.begin(true, true, true);
     M5.IMU.Init();
+
     delay(10);
 }
 
 float pitch, roll, yaw;
-float rad = PI/180;
+float rad = PI / 180;
 
-float accX = 0;
-float accY = 0;
-float accZ = 0;
-
+float accX = 0, accY = 0, accZ = 0;
 int updateDelay = 50;
 
 int state = 0;
+unsigned int accXFade = 0, accYFade = 0, accZFade = 0;
 
-int accXFade = 0;
-int accYFade = 0;
-int accZFade = 0;
-
-bool overDecelThreshold(float acc, int state){
- return (acc * 1000 < (-50 * (state + 1)));
+bool overDecelThreshold(float acc, int state)
+{
+    return (acc * 1000 < (-50 * (state + 1)));
 }
 
-bool overAccelThreshold(float acc, int state){
- return (acc * 1000 > (50 * (state + 1)));
+bool overAccelThreshold(float acc, int state)
+{
+    return (acc * 1000 > (50 * (state + 1)));
 }
 
 void loop()
 {
     M5.dis.clear();
+    
     M5.IMU.getAccelData(&accX, &accY, &accZ);
     M5.IMU.getAhrsData(&pitch, &roll, &yaw);
 
     if (M5.Btn.wasPressed())
-    {state++;
+    {
+        state++;
         if (state >= 5)
-        {
             state = 0;
-        }
+    }
+
+    accZ -= cos(roll * rad);
+
+    if (overDecelThreshold(accZ, state) || accZFade > 0)
+    {
+        if (overDecelThreshold(accZ, state))
+            accZFade = 5;
+        else
+            accZFade--;
+
+        setBuff(0x00, 0x00, 0x00);
+        M5.dis.displaybuff(DisBuff);
+
+        Serial.printf("Decelerating\n");
+    }
+    else if (overAccelThreshold(accZ, state))
+    {
+        M5.dis.clear();
+        Serial.printf("Accelerating\n");
     }
 
     M5.dis.drawpix(state, 0xffffff);
-
-   //Serial.printf("%.2f   %.2f   %.2f \n",accX * 1000,accY * 1000, accZ * 1000);
-
-/*     if (overDecelThreshold(accX, state) || accXFade > 0){
-        if (overDecelThreshold(accX, state)) accXFade = 5;
-        else {accXFade--;}
-        
-        for (int i = 1; i <= 3; i++){
-            M5.dis.drawpix(5 + i, 0xff0000);
-        }
-
-        Serial.printf("Flash Inside Red\n");
-    } else if (overAccelThreshold(accX, state)){
-        M5.dis.drawpix(5, 0xff0000);
-        M5.dis.drawpix(5 + 4, 0xff0000);
-        Serial.printf("Flash Outside Red\n");
-    } */
-
-    if (overDecelThreshold(accY - sin(roll*rad), state) || accYFade > 0){
-        if (overDecelThreshold(accY - sin(roll*rad), state)) accYFade = 15;
-        else {accYFade--;}
-        
-        for (int i = 1; i <= 3; i++){
-            M5.dis.drawpix(5*2 + i, 0x00ff00);
-        }
-
-        //Serial.printf("Flash Inside Green\n");
-    } else if (overAccelThreshold(accY - sin(roll*rad), state)){
-        M5.dis.drawpix(5*2, 0x00ff00);
-        M5.dis.drawpix(5*2 + 4, 0x00ff00);
-        //Serial.printf("Flash Outside Green\n");
-    }
-
-/*     if (overDecelThreshold(accZ, state) || accZFade > 0){
-        if (overDecelThreshold(accZ, state)) accZFade = 5;
-        else {accZFade--;}
-        
-        for (int i = 1; i <= 3; i++){
-            M5.dis.drawpix(5*3 + i, 0x0000ff);
-        }
-
-        Serial.printf("Flash Inside Blue\n");
-    } else if (overAccelThreshold(accZ, state)){
-        M5.dis.drawpix(5*3, 0x0000ff);
-        M5.dis.drawpix(5*3 + 4, 0x0000ff);
-        Serial.printf("Flash Outside Blue\n");
-    } */
 
     delay(updateDelay);
     M5.update();
