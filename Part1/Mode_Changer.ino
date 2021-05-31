@@ -252,6 +252,7 @@ void loop()
                         currentMillis = millis();
                         if (currentMillis - millisOfLastTiltUpdate > millisBetweenTiltUpdate)
                         {
+                            tl.fetchAcc();
                             tilt = tl.isTilted();
                             millisOfLastTiltUpdate = millis();
                             tl.levelChangerSensor(level, positionChanged, isDownwards);
@@ -266,6 +267,7 @@ void loop()
                         currentMillis = millis();
                         if (currentMillis - millisOfLastTiltUpdate > millisBetweenTiltUpdate)
                         {
+                            tl.fetchAcc();
                             tilt = tl.isTilted();
                             millisOfLastTiltUpdate = millis();
                             tl.levelChangerSensor(level, positionChanged, isDownwards);
@@ -280,6 +282,7 @@ void loop()
                         currentMillis = millis();
                         if (currentMillis - millisOfLastTiltUpdate > millisBetweenTiltUpdate)
                         {
+                            tl.fetchAcc();
                             tilt = tl.isTilted();
                             millisOfLastTiltUpdate = millis();
                             tl.levelChangerSensor(level, positionChanged, isDownwards);
@@ -294,6 +297,7 @@ void loop()
                         currentMillis = millis();
                         if (currentMillis - millisOfLastTiltUpdate > millisBetweenTiltUpdate)
                         {
+                            tl.fetchAcc();
                             tilt = tl.isTilted();
                             millisOfLastTiltUpdate = millis();
                             tl.levelChangerSensor(level, positionChanged, isDownwards);
@@ -309,6 +313,7 @@ void loop()
                         currentMillis = millis();
                         if (currentMillis - millisOfLastTiltUpdate > millisBetweenTiltUpdate)
                         {
+                            tl.fetchAcc();
                             tilt = tl.isTilted();
                             millisOfLastTiltUpdate = millis();
                             tl.levelChangerSensor(level, positionChanged, isDownwards);
@@ -323,6 +328,7 @@ void loop()
                         currentMillis = millis();
                         if (currentMillis - millisOfLastTiltUpdate > millisBetweenTiltUpdate)
                         {
+                            tl.fetchAcc();
                             tilt = tl.isTilted();
                             millisOfLastTiltUpdate = millis();
                             tl.levelChangerSensor(level, positionChanged, isDownwards);
