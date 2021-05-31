@@ -1,9 +1,9 @@
 #include "M5Atom.h"
 
 CRGB led(0, 0, 0);
-double pitch, roll;
+float pitch, roll, yaw;
 
-double r_rand = 180 / PI;
+double rad = PI/180;
 
 float accX = 0;
 float accY = 0;
@@ -20,15 +20,13 @@ void setup()
     M5.IMU.Init();
 }
 
-int angle = 0;
-
 void loop()
 {
     if (M5.Btn.wasPressed())
     {    Serial.printf("---------- \n");    }
   
     
-    M5.IMU.getAttitude(&pitch, &roll);
+    M5.IMU.getAhrsData(&pitch, &roll, &yaw);
     M5.IMU.getGyroData(&gyroX,&gyroY,&gyroZ);
     M5.IMU.getAccelData(&accX,&accY,&accZ); 
     M5.IMU.getTempData(&temp);
@@ -39,15 +37,8 @@ void loop()
     Serial.printf("Temperature : %.2f C \n", temp);*/
 
     //M5.dis.fillpix(led);
-    //Serial.printf("%.2f \n", 1000 * (cos(roll*2/r_rand) * (accY - sin(roll*2/r_rand)) ) );
-    Serial.printf("%.2f \n", 1000 * (accY - sin(roll*2/r_rand)) );
-    roll = -roll;
-    if  (roll > 90){
-        angle = 180 - abs(roll);
-    }
-    else {
-        angle = abs(roll);
-    }
+    Serial.printf("%.2f \n", 1000 * (accY - sin(roll*rad));
+    Serial.printf("%.2f \n", 1000 * (accZ - cos(roll*rad));
     //Serial.printf("%.2f \n", 1000 * (accY - sin(-roll*2/r_rand)) );
 
     delay(50);
