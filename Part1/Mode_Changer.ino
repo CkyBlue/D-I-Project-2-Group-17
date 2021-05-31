@@ -28,6 +28,7 @@ class SensorData
 {
 private:
     float acZ[array_size]; //aceleration Z for past 5 Timestamps
+    float temp[36];//temperature sampled every 30min
     float acZbef;
     int i;
     float accX, accY, accZ;
@@ -51,6 +52,17 @@ public:
     {
         M5.IMU.getAhrsData(&pitch, &roll, &yaw);
         M5.IMU.getAccelData(&accX, &accY, &accZ);
+        //add to temperature array here ¬Rami
+        if (i >= array_size)
+        {
+            acZbef = acZ[array_size - 1];
+            i = 0;
+        }
+        else
+        {
+            acZ[i] = accZ;
+            i++;
+        }
     }
     void fetchAcc()
     {
@@ -159,7 +171,6 @@ private:
                                                        NEO_MATRIX_COLUMNS + NEO_MATRIX_PROGRESSIVE,
                                                    NEO_GRB + NEO_KHZ800);
     uint16_t color;
-    float temperature;
     char unit;int x,pass;
 public:
     display()
@@ -187,7 +198,7 @@ public:
             unit=='C';
         }
     }
-    void displayTemperature()
+    void displayTemperature(float temperature)
     {
         matrix.fillScreen(0);
         matrix.setCursor(x, 0);
@@ -245,7 +256,6 @@ void loop()
                 {
                 case 0:
                     Serial.printf("screen activated\n");
-                    ds.displayTemperature();
                     positionChanged = false;
                     while (positionChanged == false)
                     {
@@ -253,6 +263,7 @@ void loop()
                         if (currentMillis - millisOfLastTiltUpdate > millisBetweenTiltUpdate)
                         {
                             tl.fetchAcc();
+                            ds.displayTemperature(tl.getActiveTemp());
                             tilt = tl.isTilted();
                             millisOfLastTiltUpdate = millis();
                             tl.levelChangerSensor(level, positionChanged, isDownwards);
@@ -260,6 +271,7 @@ void loop()
                     }
                     break;
                 case 1:
+                    //24hr temp
                     Serial.printf("mode 1\n");
                     positionChanged = false;
                     while (positionChanged == false)
@@ -267,10 +279,13 @@ void loop()
                         currentMillis = millis();
                         if (currentMillis - millisOfLastTiltUpdate > millisBetweenTiltUpdate)
                         {
-                            tl.fetchAcc();
-                            tilt = tl.isTilted();
-                            millisOfLastTiltUpdate = millis();
-                            tl.levelChangerSensor(level, positionChanged, isDownwards);
+                            if(currentMillis-millisOfLastTiltUpdate>20*60*1000){
+                                tl.fetchAcc();
+                                tilt = tl.isTilted();
+                                millisOfLastTiltUpdate = millis();
+                                tl.levelChangerSensor(level, positionChanged, isDownwards);
+                            }
+
                         }
                     }
                     break;
