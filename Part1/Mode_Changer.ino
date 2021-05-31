@@ -1,29 +1,31 @@
-
 #include "M5Atom.h"
 
 float accX = 0, accY = 0, accZ = 0;
-//float gyroX = 0, gyroY = 0, gyroZ = 0;
+float gyroX = 0, gyroY = 0, gyroZ = 0;
 float temp = 0;
-float accXSum = 0, accYSum = 0, accZSum = 0;
-float accXAverage = 0, accYAverage = 0, accZAverage = 0;
 bool IMU6886Flag = true;
 bool isDownwards = false;
 bool positionChanged = false;
-uint8_t i = 0;
+bool wasPressed = false;
+uint8_t ctr = 0;
 uint8_t FSM = 0;
 uint8_t level = 0;
-
 char tilt = 'a';
+unsigned long millisOfLastTempUpdate = 0;
+unsigned long millisBetweenTempUpdate = 2000;
+unsigned long millisOfLastButtonUpdate = 0;
+unsigned long millisBetweenButtonUpdate = 50;
+unsigned long millisOfLastTiltUpdate = 0;
+unsigned long millisBetweenTiltUpdate = 400;
+unsigned long currentMillis = 0;
 
-
-//bool isUpwardsFunction ();
 char isTilted ();
+void levelChangerSensor (uint8_t& level, bool& positionChanged, bool& isDownwards);
 
 
 void setup()
 {
     M5.begin(true, false, true);
-
     if (M5.IMU.Init() != 0)
         IMU6886Flag = false;
     else
@@ -35,23 +37,15 @@ void loop()
 
     if (IMU6886Flag == true)
     {
-        //M5.IMU.getGyroData(&gyroX, &gyroY, &gyroZ);
-        M5.IMU.getAccelData(&accX, &accY, &accZ);
-       // M5.IMU.getTempData(&temp);
-
-      //  Serial.printf("%.2f,%.2f,%.2f o/s \r\n", gyroX, gyroY, gyroZ);
-        Serial.printf("%.5f,%.5f,%.5f g\r\n", accX, accY, accZ);
-        //Serial.printf("Temperature : %.2f C \r\n", temp);
-    
-
-      if (M5.Btn.wasPressed())
+           if (M5.Btn.wasPressed())
       {
         tilt = isTilted();
         if (tilt == 'u')
         {
-            Serial.printf("upwards\n");
-            isDownwards = false;
-            while (isDownwards == false)
+          millisOfLastTiltUpdate = millis();
+          Serial.printf("upwards\n");
+          isDownwards = false;
+          while (isDownwards == false)
             {
               switch (level)
               {
@@ -60,22 +54,12 @@ void loop()
                   positionChanged = false;
                   while (positionChanged == false)
                   {
-                    tilt = isTilted();
-                    delay(80);
-                    if (tilt == 'r')
+                    currentMillis = millis();
+                    if (currentMillis - millisOfLastTiltUpdate > millisBetweenTiltUpdate)
                     {
-                      level++;
-                      positionChanged = true;          
-                    }
-                    else if (tilt == 'l')
-                    {
-                      level = 5;
-                      positionChanged = true;
-                    }
-                    else if (tilt == 'd')
-                    {
-                      isDownwards = true;
-                      positionChanged = true;
+                      tilt = isTilted();
+                      millisOfLastTiltUpdate = millis();
+                      levelChangerSensor (level, positionChanged, isDownwards);
                     }
                   }
                   break;
@@ -84,23 +68,12 @@ void loop()
                   positionChanged = false;
                   while (positionChanged == false)
                   {
-                    tilt = isTilted();
-                    delay(80);
-                    if (tilt == 'r')
+                    currentMillis = millis();
+                    if (currentMillis - millisOfLastTiltUpdate > millisBetweenTiltUpdate)
                     {
-                      level++;
-                      positionChanged = true;          
-                    }
-                    else if (tilt == 'l')
-                    {
-                      level=5;
-                      positionChanged = true;
-                    }
-                    else if (tilt == 'd')
-                    {
-                      level = 0;
-                      isDownwards = true;
-                      positionChanged = true;
+                      tilt = isTilted();
+                      millisOfLastTiltUpdate = millis();
+                      levelChangerSensor (level, positionChanged, isDownwards);
                     }
                   }
                   break;
@@ -109,23 +82,12 @@ void loop()
                   positionChanged = false;
                   while (positionChanged == false)
                   {
-                    tilt = isTilted();
-                    delay(80);
-                    if (tilt == 'r')
+                    currentMillis = millis();
+                    if (currentMillis - millisOfLastTiltUpdate > millisBetweenTiltUpdate)
                     {
-                      level++;
-                      positionChanged = true;          
-                    }
-                    else if (tilt == 'l')
-                    {
-                      level--;
-                      positionChanged = true;
-                    }
-                    else if (tilt == 'd')
-                    {
-                      level = 0;
-                      isDownwards = true;
-                      positionChanged = true;
+                      tilt = isTilted();
+                      millisOfLastTiltUpdate = millis();
+                      levelChangerSensor (level, positionChanged, isDownwards);
                     }
                   }
                   break;
@@ -134,23 +96,12 @@ void loop()
                   positionChanged = false;
                   while (positionChanged == false)
                   {
-                    tilt = isTilted();
-                    delay(80);
-                    if (tilt == 'r')
+                    currentMillis = millis();
+                    if (currentMillis - millisOfLastTiltUpdate > millisBetweenTiltUpdate)
                     {
-                      level++;
-                      positionChanged = true;          
-                    }
-                    else if (tilt == 'l')
-                    {
-                      level--;
-                      positionChanged = true;
-                    }
-                    else if (tilt == 'd')
-                    {
-                      level = 0;
-                      isDownwards = true;
-                      positionChanged = true;
+                      tilt = isTilted();
+                      millisOfLastTiltUpdate = millis();
+                      levelChangerSensor (level, positionChanged, isDownwards);
                     }
                   }
                   break;
@@ -159,23 +110,12 @@ void loop()
                   positionChanged = false;
                   while (positionChanged == false)
                   {
-                    tilt = isTilted();
-                    delay(80);
-                    if (tilt == 'r')
+                    currentMillis = millis();
+                    if (currentMillis - millisOfLastTiltUpdate > millisBetweenTiltUpdate)
                     {
-                      level++;
-                      positionChanged = true;          
-                    }
-                    else if (tilt == 'l')
-                    {
-                      level--;
-                      positionChanged = true;
-                    }
-                    else if (tilt == 'd')
-                    {
-                      level = 0;
-                      isDownwards = true;
-                      positionChanged = true;
+                      tilt = isTilted();
+                      millisOfLastTiltUpdate = millis();
+                      levelChangerSensor (level, positionChanged, isDownwards);
                     }
                   }
                   break;
@@ -184,81 +124,80 @@ void loop()
                   positionChanged = false;
                   while (positionChanged == false)
                   {
-                    tilt = isTilted();
-                    delay(80);
-                    if (tilt == 'r')
+                    currentMillis = millis();
+                    if (currentMillis - millisOfLastTiltUpdate > millisBetweenTiltUpdate)
                     {
-                      level=1;
-                      positionChanged = true;          
-                    }
-                    else if (tilt == 'l')
-                    {
-                      level--;
-                      positionChanged = true;
-                    }
-                    else if (tilt == 'd')
-                    {
-                      level = 0;
-                      isDownwards = true;
-                      positionChanged = true;
+                      tilt = isTilted();
+                      millisOfLastTiltUpdate = millis();
+                      levelChangerSensor (level, positionChanged, isDownwards);
                     }
                   }
                   break;
                 default:
-                  break;
-                
+                  break;            
               }
             }
+
+
+            
         }
       }
     }
+    currentMillis = millis();
 
-    delay(100);
-    M5.update();
+    if (currentMillis - millisOfLastButtonUpdate > millisBetweenButtonUpdate)
+    {
+      M5.update();
+      millisOfLastButtonUpdate = millis();
+    }    
+
+    if (currentMillis - millisOfLastTempUpdate > millisBetweenTempUpdate)
+    {
+      M5.IMU.getTempData(&temp);
+      Serial.printf("Temperature: %.2f °C \n", temp);
+      millisOfLastTempUpdate = millis();
+    }
 }
+
 
 char isTilted() // returns r if tilted right, l if tilted left, u if held upwards, d if held downwards
 {
-  for (i = 0; i<10; i++)
-        {
-          M5.IMU.getAccelData(&accX, &accY, &accZ);
-          delay (50);
-          //Serial.printf("%.2f,%.2f,%.2f g\r\n", accX, accY, accZ);
-          accXSum += accX;
-          accYSum += accY;
-          accZSum += accZ;
-          //Serial.printf("%.2f,%.2f,%.2f\n", accXSum, accYSum, accZSum);
-        }
-  accXAverage = accXSum/i;
-  accYAverage = accYSum/i;
-  accZAverage = accZSum/i;
-  //Serial.printf("%.2f,%.2f,%.2f\n", accXAverage, accYAverage, accZAverage);
-  if(abs(accXAverage) < 0.5 && abs(accYAverage) < 0.5 && accZAverage < 0) // device held upwards
-  {
-    accXSum = 0;
-    accYSum = 0;
-    accZSum = 0;
+  M5.IMU.getAccelData(&accX, &accY, &accZ);
+  if(abs(accX) < 0.6 && abs(accY) < 0.6 && accZ < 0) // device held upwards
     return 'u';
-  }
-  else if (accXAverage > 0.5)
-  {
-    accXSum = 0;
-    accYSum = 0;
-    accZSum = 0;
+  else if (accX > 0.4)
     return 'r';
-  }
-  else if (accXAverage < -0.5)
-  {
-    accXSum = 0;
-    accYSum = 0;
-    accZSum = 0;
+  else if (accX < -0.4)
     return 'l';
-  }
   else // device held downwards
-  {
-    accXSum = 0;
-    accYSum = 0;
-    accZSum = 0;
     return 'd';
+}
+
+
+void levelChangerSensor (uint8_t& level, bool& positionChanged, bool& isDownwards)
+{
+  char orientation = isTilted();
+  if (orientation == 'r')
+  {
+    if (level == 5)
+      level = 1;
+    else
+      level++;  
+    positionChanged = true; 
+  }
+  else if (orientation == 'l')
+  {
+    if (level == 0 || level == 1)
+      level = 5;
+    else
+      level--;
+    positionChanged = true;
+  }
+  else if (orientation == 'd')
+  {
+    level = 0;
+    Serial.printf("tilted downwards\n");
+    isDownwards = true;
+    positionChanged = true;
   }
 }
