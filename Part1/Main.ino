@@ -12,8 +12,10 @@ using namespace std;
 //Initialize Variables
 int FSM = 0;
 float U, acc, percentacc;
-bool firstTime;                     //the first time acceleration data is retrieved
-int i;bool x;
+bool firstTime; //the first time acceleration data is retrieved
+int i;
+double r_rand = 180 / PI;
+bool x;
 CRGB color;
 class bike
 {
@@ -21,6 +23,7 @@ class bike
 private:
     float accX, accY, accZ;
     float MMAX, MMAY, MMAZ;
+    float MMAZB;
     float getMMA(float yesterday, float today, int N)
     {
         return (((N - 1) * yesterday + today) / N);
@@ -38,6 +41,7 @@ public:
         MMAX = 0;
         MMAY = 0;
         MMAZ = 0;
+        MMAZB = 0;
     }
     float getAccX() { return accX; }
     float getAccY() { return accY; }
@@ -52,19 +56,34 @@ public:
         MMAX = getMMA(before.getMMAX(), accX, array_size);
         MMAY = getMMA(before.getMMAY(), accY, array_size);
         MMAZ = getMMA(before.getMMAZ(), accZ, array_size);
+        MMAZB = before.getMMAZ();
     } //set the MMA for this current object
 
-    bool isbraking()
+    bool isbraking(bool isFront)
     {
-        //max a biker can pedal is 0.07g, so any moving average over 0.07 is braking
-        float mag=abs(sqrt(pow(MMAX,2)+pow(MMAY,2)+pow(MMAZ,2))-1);
+        //max a biker can pedal is 0.05g, so any moving average over 0.5 is braking
+        float mag = abs(sqrt(pow(MMAX, 2) + pow(MMAY, 2) + pow(MMAZ, 2)) - 1);
         Serial.printf("%.2f\n", mag);
-        if(mag>0.07){
-            //Serial.print("TRUE");
-            return true;
+        if (isFront)
+        {
+            if (mag > 0.03 && MMAZ <= MMAZB)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         } else {
-            return false;
-        }
+            if (mag > 0.03 && MMAZ >= MMAZB)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        } 
     }
 };
 
@@ -116,6 +135,7 @@ public:
 };
 bike MA[array_size];
 strobe stro;
+int fade = 0;
 float getAvg(float *arr, int si)
 {
     float sum = 0;
@@ -126,43 +146,40 @@ float getAvg(float *arr, int si)
     return sum / (float)si;
 }
 
-
 void setup()
 {
-    M5.begin(true, false, true);
+    M5.begin(true, true, true);
     M5.IMU.Init();
     firstTime = true;
     percentacc = update_delay / 1000 * percentchange / 2;
 }
-
-int fade = 0;
 
 void loop()
 {
     switch (FSM)
     {
     case 0:
-        {
+    {
         //OFF STATE
         M5.dis.clear();
-        }
-        break;
+    }
+    break;
     case 1:
-        {
+    {
         //STATE 1 Manual Rear strobe (RED)
         stro.setColor(CRGB::Green);
         stro.strobeLight();
-        }
-        break;
+    }
+    break;
     case 2:
-        {
+    {
         //STATE 2  Manual Front strobe (WHITE)
         stro.setColor(CRGB::White);
         stro.strobeLight();
-        }
-        break;
+    }
+    break;
     case 3:
-        {
+    {
         //STATE 3 Automatic Rear Mode Rear (RED)
         //LEDs are solid during a braking event. Return to strobe when riding
         stro.setColor(CRGB::Green);
@@ -170,15 +187,19 @@ void loop()
         i = 0;
         while (x)
         {
-            if(i==0){
-                MA[i].setMMA(MA[0]); //fetch acceleration and set Moving average 
-            } else {
-                MA[i].setMMA(MA[i-1]);
+            if (i == 0)
+            {
+                MA[i].setMMA(MA[0]); //fetch acceleration and set Moving average
+            }
+            else
+            {
+                MA[i].setMMA(MA[i - 1]);
             }
             //check for braking
-            if (MA[i].isbraking() || fade > 0)
+            bool isbrake=MA[i].isbraking(false);
+            if (isbrake || fade > 0)
             {
-                if (MA[i].isbraking()) fade = 20;
+                if (isbrake) fade = 20;
                 else {fade--;};
 
                 M5.dis.fillpix(stro.getColor());
@@ -194,33 +215,35 @@ void loop()
             }
             if (i >= array_size)
             {
-                MA[0]=MA[array_size-1];
+                MA[0] = MA[array_size - 1];
                 i = 0;
             }
             delay(update_delay);
             M5.update();
         }
-        }
-        break;
-    
+    }
+    break;
     case 4:
-        {
-        //STATE 3 Automatic Rear Mode Rear (RED)
-        //LEDs are solid during a braking event. Return to strobe when riding
+    {
         stro.setColor(CRGB::White);
         x = true;
         i = 0;
         while (x)
         {
-            if(i==0){
-                MA[i].setMMA(MA[0]); //fetch acceleration and set Moving average 
-            } else {
-                MA[i].setMMA(MA[i-1]);
+            if (i == 0)
+            {
+                MA[i].setMMA(MA[0]); //fetch acceleration and set Moving average
+            }
+            else
+            {
+                MA[i].setMMA(MA[i - 1]);
             }
             //check for braking
-            if (MA[i].isbraking() || fade > 0)
+            //check for braking
+            bool isbrake=MA[i].isbraking(true);
+            if (isbrake || fade > 0)
             {
-                if (MA[i].isbraking()) fade = 20;
+                if (isbrake) fade = 20;
                 else {fade--;};
 
                 M5.dis.fillpix(stro.getColor());
@@ -236,50 +259,14 @@ void loop()
             }
             if (i >= array_size)
             {
-                MA[0]=MA[array_size-1];
+                MA[0] = MA[array_size - 1];
                 i = 0;
             }
             delay(update_delay);
             M5.update();
         }
-        }
-        break;
-/*    case 4:
-        {
-        stro.setColor(CRGB::White);
-        x = true;
-        i = 0;
-        while (x)
-        {
-            if(i==0){
-                MA[i].setMMA(MA[0]); //fetch acceleration and set Moving average 
-            } else {
-                MA[i].setMMA(MA[i-1]);
-            }
-            //check for braking
-            if (MA[i].isbraking())
-            {
-                M5.dis.fillpix(stro.getColor());
-            }
-            else
-            {
-                stro.strobeLight();
-            }
-            i++;
-            if (M5.Btn.wasPressed())
-            {
-                break;
-            }
-            if (i >= array_size)
-            {
-                MA[0]=MA[array_size-1];
-                i = 0;
-            }
-            delay(update_delay);
-            M5.update();
-        }
-        }
-        break;*/
+    }
+    break;
     default:
         break;
     }
@@ -293,7 +280,6 @@ void loop()
     delay(update_delay);
     M5.update();
 }
-
 
 /*bool isbraking(float *arr, int si)
 {
