@@ -22,6 +22,9 @@ unsigned long currentMillis = 0;
 char isTilted ();
 void levelChangerSensor (uint8_t& level, bool& positionChanged, bool& isDownwards);
 
+void mode4(){
+
+} 
 
 void setup()
 {
@@ -107,6 +110,7 @@ void loop()
                   break;
                 case 4:
                   Serial.printf("mode 4\n");
+                  mode4();
                   positionChanged = false;
                   while (positionChanged == false)
                   {
