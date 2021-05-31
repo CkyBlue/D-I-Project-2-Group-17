@@ -1,264 +1,272 @@
-
 #include "M5Atom.h"
+#define array_size 5
+#define LED_brightness 85
 
-float accX = 0, accY = 0, accZ = 0;
-//float gyroX = 0, gyroY = 0, gyroZ = 0;
 float temp = 0;
-float accXSum = 0, accYSum = 0, accZSum = 0;
-float accXAverage = 0, accYAverage = 0, accZAverage = 0;
 bool IMU6886Flag = true;
 bool isDownwards = false;
 bool positionChanged = false;
-uint8_t i = 0;
+bool wasPressed = false;
+uint8_t ctr = 0;
 uint8_t FSM = 0;
 uint8_t level = 0;
-
 char tilt = 'a';
+unsigned long millisOfLastTempUpdate = 0;
+unsigned long millisBetweenTempUpdate = 2000;
+unsigned long millisOfLastButtonUpdate = 0;
+unsigned long millisBetweenButtonUpdate = 50;
+unsigned long millisOfLastTiltUpdate = 0;
+unsigned long millisBetweenTiltUpdate = 400;
+unsigned long currentMillis = 0;
+class SensorData
+{
+private:
+    float acZ[array_size];//aceleration Z for past 5 Timestamps
+    float acZbef;
+    int i;
+    float accX, accY, accZ;
+    float gyroX, gyroY, gyroZ;
+    float pitch, roll, yaw;
+public:
+    SensorData()
+    {
+        accX = 0;
+        accY = 0;
+        accZ = 0;
+        gyroX = 0;
+        gyroY = 0;
+        gyroZ = 0;
+        i=0;
+    }
+    void fetchAcc()
+    {
+        M5.IMU.getAccelData(&accX, &accY, &accZ);
+        if(i>=array_size){//c
+            acZbef=acZ[array_size-1];//c
+            i=0;
+        } else {
+            acZ[i]=accZ;
+            i++;
+        }
+    }
+    void fetchAngles()
+    {
+        M5.IMU.getAhrsData(&pitch, &roll, &yaw);
+    }
+    bool isTap(){//check if tapping
+        if(i==0){//use before
+            if(abs(acZ[i]-acZbef)/abs(acZbef)>0.03){
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            if(abs(acZ[i]-acZ[i-1])/abs(acZ[i-1])>0.03){
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+    bool isUp() //checks if vertically upwards
+    {
+        if ((abs(roll)) < 1 && (abs(pitch)) < 1 && (abs(yaw) < 1))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    char isTilted() // returns r if tilted right, l if tilted left, u if held upwards, d if held downwards
+    {
+        if (abs(accX) < 0.6 && abs(accY) < 0.6 && accZ < 0) // device held upwards
+            return 'u';
+        else if (accX > 0.4)
+            return 'r';
+        else if (accX < -0.4)
+            return 'l';
+        else // device held downwards
+            return 'd';
+    }
+    void levelChangerSensor(uint8_t &level, bool &positionChanged, bool &isDownwards)
+    {
+        char orientation = isTilted();
+        if (orientation == 'r')
+        {
+            if (level == 5)
+                level = 1;
+            else
+                level++;
+            positionChanged = true;
+        }
+        else if (orientation == 'l')
+        {
+            if (level == 0 || level == 1)
+                level = 5;
+            else
+                level--;
+            positionChanged = true;
+        }
+        else if (orientation == 'd')
+        {
+            level = 0;
+            Serial.printf("tilted downwards\n");
+            isDownwards = true;
+            positionChanged = true;
+        }
+    }
+};
+/*class Unit(){
+    
+}*/
+SensorData tl;
+void getUnit() {
 
+}
 
-//bool isUpwardsFunction ();
-char isTilted ();
-
+void mode4()
+{
+}
 
 void setup()
 {
     M5.begin(true, false, true);
-
     if (M5.IMU.Init() != 0)
         IMU6886Flag = false;
     else
         IMU6886Flag = true;
 }
+/*if (i == 0)
+            {
+                MA[i].setMMA(MA[0]); //fetch acceleration and set Moving average
+            }
+            else
+            {
+                MA[i].setMMA(MA[i - 1]);
+            }
+            */
 
+int i=0;
 void loop()
 {
-
     if (IMU6886Flag == true)
     {
-        //M5.IMU.getGyroData(&gyroX, &gyroY, &gyroZ);
-        M5.IMU.getAccelData(&accX, &accY, &accZ);
-       // M5.IMU.getTempData(&temp);
-
-      //  Serial.printf("%.2f,%.2f,%.2f o/s \r\n", gyroX, gyroY, gyroZ);
-        Serial.printf("%.5f,%.5f,%.5f g\r\n", accX, accY, accZ);
-        //Serial.printf("Temperature : %.2f C \r\n", temp);
-    
-
-      if (M5.Btn.wasPressed())
-      {
-        tilt = isTilted();
-        if (tilt == 'u')
+        tilt = tl.isTilted();
+        tl.fetchAcc();
+        if ((M5.Btn.wasPressed() || tl.isTap()) && (tilt == 'u'))
         {
+            millisOfLastTiltUpdate = millis();
             Serial.printf("upwards\n");
             isDownwards = false;
             while (isDownwards == false)
             {
-              switch (level)
-              {
+                switch (level)
+                {
                 case 0:
-                  Serial.printf("screen activated\n");
-                  positionChanged = false;
-                  while (positionChanged == false)
-                  {
-                    tilt = isTilted();
-                    delay(80);
-                    if (tilt == 'r')
+                    Serial.printf("screen activated\n");
+                    positionChanged = false;
+                    while (positionChanged == false)
                     {
-                      level++;
-                      positionChanged = true;          
+                        currentMillis = millis();
+                        if (currentMillis - millisOfLastTiltUpdate > millisBetweenTiltUpdate)
+                        {
+                            tilt = tl.isTilted();
+                            millisOfLastTiltUpdate = millis();
+                            tl.levelChangerSensor(level, positionChanged, isDownwards);
+                        }
                     }
-                    else if (tilt == 'l')
-                    {
-                      level = 5;
-                      positionChanged = true;
-                    }
-                    else if (tilt == 'd')
-                    {
-                      isDownwards = true;
-                      positionChanged = true;
-                    }
-                  }
-                  break;
+                    break;
                 case 1:
-                  Serial.printf("mode 1\n");
-                  positionChanged = false;
-                  while (positionChanged == false)
-                  {
-                    tilt = isTilted();
-                    delay(80);
-                    if (tilt == 'r')
+                    Serial.printf("mode 1\n");
+                    positionChanged = false;
+                    while (positionChanged == false)
                     {
-                      level++;
-                      positionChanged = true;          
+                        currentMillis = millis();
+                        if (currentMillis - millisOfLastTiltUpdate > millisBetweenTiltUpdate)
+                        {
+                            tilt = tl.isTilted();
+                            millisOfLastTiltUpdate = millis();
+                            tl.levelChangerSensor(level, positionChanged, isDownwards);
+                        }
                     }
-                    else if (tilt == 'l')
-                    {
-                      level=5;
-                      positionChanged = true;
-                    }
-                    else if (tilt == 'd')
-                    {
-                      level = 0;
-                      isDownwards = true;
-                      positionChanged = true;
-                    }
-                  }
-                  break;
+                    break;
                 case 2:
-                  Serial.printf("mode 2\n");
-                  positionChanged = false;
-                  while (positionChanged == false)
-                  {
-                    tilt = isTilted();
-                    delay(80);
-                    if (tilt == 'r')
+                    Serial.printf("mode 2\n");
+                    positionChanged = false;
+                    while (positionChanged == false)
                     {
-                      level++;
-                      positionChanged = true;          
+                        currentMillis = millis();
+                        if (currentMillis - millisOfLastTiltUpdate > millisBetweenTiltUpdate)
+                        {
+                            tilt = tl.isTilted();
+                            millisOfLastTiltUpdate = millis();
+                            tl.levelChangerSensor(level, positionChanged, isDownwards);
+                        }
                     }
-                    else if (tilt == 'l')
-                    {
-                      level--;
-                      positionChanged = true;
-                    }
-                    else if (tilt == 'd')
-                    {
-                      level = 0;
-                      isDownwards = true;
-                      positionChanged = true;
-                    }
-                  }
-                  break;
+                    break;
                 case 3:
-                  Serial.printf("mode 3\n");
-                  positionChanged = false;
-                  while (positionChanged == false)
-                  {
-                    tilt = isTilted();
-                    delay(80);
-                    if (tilt == 'r')
+                    Serial.printf("mode 3\n");
+                    positionChanged = false;
+                    while (positionChanged == false)
                     {
-                      level++;
-                      positionChanged = true;          
+                        currentMillis = millis();
+                        if (currentMillis - millisOfLastTiltUpdate > millisBetweenTiltUpdate)
+                        {
+                            tilt = tl.isTilted();
+                            millisOfLastTiltUpdate = millis();
+                            tl.levelChangerSensor(level, positionChanged, isDownwards);
+                        }
                     }
-                    else if (tilt == 'l')
-                    {
-                      level--;
-                      positionChanged = true;
-                    }
-                    else if (tilt == 'd')
-                    {
-                      level = 0;
-                      isDownwards = true;
-                      positionChanged = true;
-                    }
-                  }
-                  break;
+                    break;
                 case 4:
-                  Serial.printf("mode 4\n");
-                  positionChanged = false;
-                  while (positionChanged == false)
-                  {
-                    tilt = isTilted();
-                    delay(80);
-                    if (tilt == 'r')
+                    Serial.printf("mode 4\n");
+                    mode4();
+                    positionChanged = false;
+                    while (positionChanged == false)
                     {
-                      level++;
-                      positionChanged = true;          
+                        currentMillis = millis();
+                        if (currentMillis - millisOfLastTiltUpdate > millisBetweenTiltUpdate)
+                        {
+                            tilt = tl.isTilted();
+                            millisOfLastTiltUpdate = millis();
+                            tl.levelChangerSensor(level, positionChanged, isDownwards);
+                        }
                     }
-                    else if (tilt == 'l')
-                    {
-                      level--;
-                      positionChanged = true;
-                    }
-                    else if (tilt == 'd')
-                    {
-                      level = 0;
-                      isDownwards = true;
-                      positionChanged = true;
-                    }
-                  }
-                  break;
+                    break;
                 case 5:
-                  Serial.printf("mode 5\n");
-                  positionChanged = false;
-                  while (positionChanged == false)
-                  {
-                    tilt = isTilted();
-                    delay(80);
-                    if (tilt == 'r')
+                    Serial.printf("mode 5\n");
+                    positionChanged = false;
+                    while (positionChanged == false)
                     {
-                      level=1;
-                      positionChanged = true;          
+                        currentMillis = millis();
+                        if (currentMillis - millisOfLastTiltUpdate > millisBetweenTiltUpdate)
+                        {
+                            tilt = tl.isTilted();
+                            millisOfLastTiltUpdate = millis();
+                            tl.levelChangerSensor(level, positionChanged, isDownwards);
+                        }
                     }
-                    else if (tilt == 'l')
-                    {
-                      level--;
-                      positionChanged = true;
-                    }
-                    else if (tilt == 'd')
-                    {
-                      level = 0;
-                      isDownwards = true;
-                      positionChanged = true;
-                    }
-                  }
-                  break;
+                    break;
                 default:
-                  break;
-                
-              }
+                    break;
+                }
             }
         }
-      }
+    }
+    currentMillis = millis();
+
+    if (currentMillis - millisOfLastButtonUpdate > millisBetweenButtonUpdate)
+    {
+        M5.update();
+        millisOfLastButtonUpdate = millis();
     }
 
-    delay(100);
-    M5.update();
-}
-
-char isTilted() // returns r if tilted right, l if tilted left, u if held upwards, d if held downwards
-{
-  for (i = 0; i<10; i++)
-        {
-          M5.IMU.getAccelData(&accX, &accY, &accZ);
-          delay (50);
-          //Serial.printf("%.2f,%.2f,%.2f g\r\n", accX, accY, accZ);
-          accXSum += accX;
-          accYSum += accY;
-          accZSum += accZ;
-          //Serial.printf("%.2f,%.2f,%.2f\n", accXSum, accYSum, accZSum);
-        }
-  accXAverage = accXSum/i;
-  accYAverage = accYSum/i;
-  accZAverage = accZSum/i;
-  //Serial.printf("%.2f,%.2f,%.2f\n", accXAverage, accYAverage, accZAverage);
-  if(abs(accXAverage) < 0.5 && abs(accYAverage) < 0.5 && accZAverage < 0) // device held upwards
-  {
-    accXSum = 0;
-    accYSum = 0;
-    accZSum = 0;
-    return 'u';
-  }
-  else if (accXAverage > 0.5)
-  {
-    accXSum = 0;
-    accYSum = 0;
-    accZSum = 0;
-    return 'r';
-  }
-  else if (accXAverage < -0.5)
-  {
-    accXSum = 0;
-    accYSum = 0;
-    accZSum = 0;
-    return 'l';
-  }
-  else // device held downwards
-  {
-    accXSum = 0;
-    accYSum = 0;
-    accZSum = 0;
-    return 'd';
-  }
+    if (currentMillis - millisOfLastTempUpdate > millisBetweenTempUpdate)
+    {
+        M5.IMU.getTempData(&temp);
+        Serial.printf("Temperature: %.2f °C \n", temp);
+        millisOfLastTempUpdate = millis();
+    }
 }

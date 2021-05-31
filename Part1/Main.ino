@@ -7,14 +7,15 @@
 #define update_delay 50
 #define strobe_delay 750
 #define array_size 5
+#define LED_brightness 85
 using namespace std;
+//accZ - cos(roll*rad)
 
 //Initialize Variables
 int FSM = 0;
 float U, acc, percentacc;
-bool firstTime; //the first time acceleration data is retrieved
 int i;
-double r_rand = 180 / PI;
+double DEGREE_TO_RAD = 180 / PI;
 bool x;
 CRGB color;
 class bike
@@ -23,6 +24,7 @@ class bike
 private:
     float accX, accY, accZ;
     float MMAX, MMAY, MMAZ;
+    float pitch,roll,yaw;
     float MMAZB;
     float getMMA(float yesterday, float today, int N)
     {
@@ -30,7 +32,13 @@ private:
     } //returns Modified Moving Average at the next timestamp from acc array
     void setAcc()
     {
+        M5.IMU.getAhrsData(&pitch,&roll,&yaw);
         M5.IMU.getAccelData(&accX, &accY, &accZ);
+        accX+=sin(pitch*DEGREE_TO_RAD);
+        accY-=sin(roll*DEGREE_TO_RAD);
+        accZ-=cos(roll*DEGREE_TO_RAD);
+        //this is to cancel out the affect of gravitational acceleration when rotating the device
+        
     } //retrieve acceleration data
 public:
     bike()
@@ -61,12 +69,13 @@ public:
 
     bool isbraking(bool isFront)
     {
-        //max a biker can pedal is 0.05g, so any moving average over 0.5 is braking
-        float mag = abs(sqrt(pow(MMAX, 2) + pow(MMAY, 2) + pow(MMAZ, 2)) - 1);
+        //max a biker can pedal is 0.03g, so any moving average over 0.03 COULD be braking
+        //to confirm, check if moving average of z-acceleration(+z points behind LEDs) is decreasing or increasing
+        float mag = abs(sqrt(pow(MMAX, 2) + pow(MMAY, 2) + pow(MMAZ, 2)));
         Serial.printf("%.2f\n", mag);
         if (isFront)
         {
-            if (mag > 0.03 && MMAZ <= MMAZB)
+            if (mag > 0.03 && MMAZ >= MMAZB)
             {
                 return true;
             }
@@ -75,7 +84,7 @@ public:
                 return false;
             }
         } else {
-            if (mag > 0.03 && MMAZ >= MMAZB)
+            if (mag > 0.03 && MMAZ <= MMAZB)
             {
                 return true;
             }
@@ -150,8 +159,7 @@ void setup()
 {
     M5.begin(true, true, true);
     M5.IMU.Init();
-    firstTime = true;
-    percentacc = update_delay / 1000 * percentchange / 2;
+    M5.dis.setBrightness(LED_brightness);
 }
 
 void loop()
@@ -280,24 +288,3 @@ void loop()
     delay(update_delay);
     M5.update();
 }
-
-/*bool isbraking(float *arr, int si)
-{
-    for (int i = 0; i < si; i++)
-    {
-        if (arr[i] == 0)
-        {
-            return false;
-        }
-    }
-    float percentage_diff = (arr[si - 1] - arr[0]) / arr[0] * 100;
-    if (percentage_diff > percentacc)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-} //checks if the motion is braking given acceleration data
-*/
