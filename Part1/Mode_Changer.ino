@@ -169,10 +169,14 @@ public:
     void levelChangerSensor(uint8_t &level, bool &positionChanged, bool &isDownwards)
     {
         char orientation = isTilted();
-        if (orientation == 'r')
+        if (orientation == 'u')
         {
-            if (level == 5)
-                level = 1;
+            positionChanged = false;
+        }
+        else if (orientation == 'r')
+        {
+            if (level == 4)
+                level = 0;
             else
                 level++;
             positionChanged = true;
@@ -180,7 +184,7 @@ public:
         else if (orientation == 'l')
         {
             if (level == 0 || level == 1)
-                level = 5;
+                level = 4;
             else
                 level--;
             positionChanged = true;
@@ -196,18 +200,18 @@ public:
 };
 //scrolling text inspired by https://github.com/lukasmaximus89/M5Atom-Resources/blob/master/AtomScrollingText/AtomScrollingText.ino
 Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(5, 5, PIN,
-  NEO_MATRIX_TOP     + NEO_MATRIX_LEFT +
-  NEO_MATRIX_ROWS + NEO_MATRIX_PROGRESSIVE,
-  NEO_GRB            + NEO_KHZ800);
+                                               NEO_MATRIX_TOP + NEO_MATRIX_LEFT +
+                                                   NEO_MATRIX_ROWS + NEO_MATRIX_PROGRESSIVE,
+                                               NEO_GRB + NEO_KHZ800);
 class display
 {
 private:
-
     uint16_t color;
-    
+    bool canset;
     char unit;
-    int x, pass;
+    int x;
     float temperature;
+    String output;
 
 public:
     display()
@@ -218,10 +222,14 @@ public:
         matrix.setBrightness(LED_brightness);
         matrix.setTextColor(color);
         color = matrix.Color(255, 255, 255);
+        canset = true;
         temperature = 0;
         x = 0;
-        pass = 0;
         unit = 'C';
+        output = "";
+    }
+    void setTemp()
+    {
     }
     void changeUnit()
     {
@@ -241,22 +249,43 @@ public:
             unit == 'C';
         }
     }
+    bool cansettemp()
+    {
+        if (canset)
+        {
+            canset != canset;
+            return true;
+        }
+        else
+        {
+            false;
+        }
+    }
+    void resetScreen(){
+        x=0;
+        matrix.clear();
+    }
     void displayTemperature(float temp)
     {
-        temperature = temp;
+        if (cansettemp())
+        {
+            temperature = temp;
+            output = "";
+            output.concat(temperature);
+            Serial.print(output);
+            output += unit;
+        } else {
+            resetScreen();
+        }
+
         matrix.fillScreen(0);
         matrix.setCursor(x, 0);
-        String u = "";
-        u.concat(temperature);
-        Serial.print(u);
-        u += unit;
-        matrix.print(u);
+        matrix.print(output);
         if (--x < -96)
         {
             x = matrix.width();
-            if (++pass >= 3)
-                pass = 0;
             matrix.setTextColor(color);
+            canset = true;
         }
         matrix.show();
     }
@@ -265,7 +294,8 @@ public:
 SensorData tl;
 display ds;
 
-void update(){
+void update()
+{
     currentMillis = millis();
 
     if (currentMillis - millisOfLastButtonUpdate > millisBetweenButtonUpdate)
@@ -279,7 +309,7 @@ void update(){
     if (currentMillis - millisOfLastTempUpdate > millisBetweenTempUpdate)
     {
         //M5.IMU.getTempData(&temp);
-        Serial.printf("Temperature: %.2f °C \n", tl.getActiveTemp());
+        //Serial.printf("Temperature: %.2f °C \n", tl.getActiveTemp());
         tl.addtotemparr(tl.getActiveTemp()); //recalculate 24 hr average and update data
         millisOfLastTempUpdate = millis();
     }
@@ -301,18 +331,17 @@ void setup()
 }
 void loop()
 {
-    update();
     if (IMU6886Flag == true)
     {
-        tilt = tl.isTilted();
-        if ((M5.Btn.wasPressed() || tl.isTap()) && (tilt == 'u'))
+        update();
+        if (M5.Btn.wasPressed() /*|| tl.isTap()*/ && (tilt == 'u'))
         {
             Serial.printf("upwards\n");
             isDownwards = false;
             positionChanged = false;
-            matrix.clear();
-            while (!isDownwards && !positionChanged)
+            while (!isDownwards)
             {
+                update();
                 currentMillis = millis();
                 if (currentMillis - millisOfLastTiltUpdate > millisBetweenTiltUpdate)
                 {
@@ -323,7 +352,8 @@ void loop()
                     {
                     case 0:
                         Serial.printf("screen activated\n");
-                        ds.displayTemperature(tl.getActiveTemp());
+                        //ds.displayTemperature(tl.getActiveTemp());//NO GO because its changing
+
                         tl.levelChangerSensor(level, positionChanged, isDownwards);
                         break;
                     case 1:
@@ -331,7 +361,7 @@ void loop()
                         Serial.printf("mode 2\n");
 
                         millisOfLastTiltUpdate = millis();
-                        ds.displayTemperature(tl.get24Average());
+                        //ds.displayTemperature(tl.get24Average());
                         tl.levelChangerSensor(level, positionChanged, isDownwards);
 
                         break;
@@ -357,12 +387,9 @@ void loop()
                         break;
                     default:
                         break;
-
                     }
-                    update();
                 }
             }
         }
     }
-    
 }
