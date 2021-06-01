@@ -195,10 +195,10 @@ public:
     }
 };
 //scrolling text inspired by https://github.com/lukasmaximus89/M5Atom-Resources/blob/master/AtomScrollingText/AtomScrollingText.ino
-    Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(5, 5, PIN,
-                                                   NEO_MATRIX_TOP + NEO_MATRIX_RIGHT +
-                                                       NEO_MATRIX_COLUMNS + NEO_MATRIX_PROGRESSIVE,
-                                                   NEO_GRB + NEO_KHZ800);
+Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(5, 5, PIN,
+  NEO_MATRIX_TOP     + NEO_MATRIX_LEFT +
+  NEO_MATRIX_ROWS + NEO_MATRIX_PROGRESSIVE,
+  NEO_GRB            + NEO_KHZ800);
 uint16_t colors[] = {
   matrix.Color(255, 0, 0), matrix.Color(0, 255, 0), matrix.Color(0, 0, 255) };
 class display
@@ -297,6 +297,7 @@ void loop()
             Serial.printf("upwards\n");
             isDownwards = false;
             positionChanged = false;
+            matrix.clear();
             while (!isDownwards && !positionChanged)
             {
                 currentMillis = millis();
