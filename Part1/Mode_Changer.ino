@@ -123,7 +123,7 @@ public:
     { //check if tapping
         if (i == 0)
         { //use before
-            if (abs(acZ[i] - acZbef) / abs(acZbef) > 0.03)
+            if (abs(acZ[i] - acZbef) / abs(acZbef) > 0.1)
             {
                 return true;
             }
@@ -134,7 +134,7 @@ public:
         }
         else
         {
-            if (abs(acZ[i] - acZ[i - 1]) / abs(acZ[i - 1]) > 0.03)
+            if (abs(acZ[i] - acZ[i - 1]) / abs(acZ[i - 1]) > 0.1)
             {
                 return true;
             }
@@ -195,14 +195,18 @@ public:
     }
 };
 //scrolling text inspired by https://github.com/lukasmaximus89/M5Atom-Resources/blob/master/AtomScrollingText/AtomScrollingText.ino
-class display
-{
-private:
     Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(5, 5, PIN,
                                                    NEO_MATRIX_TOP + NEO_MATRIX_RIGHT +
                                                        NEO_MATRIX_COLUMNS + NEO_MATRIX_PROGRESSIVE,
                                                    NEO_GRB + NEO_KHZ800);
-    uint16_t color;
+uint16_t colors[] = {
+  matrix.Color(255, 0, 0), matrix.Color(0, 255, 0), matrix.Color(0, 0, 255) };
+class display
+{
+private:
+
+    //uint16_t color;
+    
     char unit;
     int x, pass;
     float temperature;
@@ -214,8 +218,8 @@ public:
         matrix.begin();
         matrix.setTextWrap(false);
         matrix.setBrightness(LED_brightness);
-        matrix.setTextColor(color);
-        color = matrix.Color(255, 255, 255);
+        matrix.setTextColor(colors[0]);
+        //color = matrix.Color(255, 255, 255);
         temperature = 0;
         x = 0;
         pass = 0;
@@ -247,13 +251,13 @@ public:
         String u = "";
         u.concat(temperature);
         u += unit;
-        matrix.print(x);
-        if (--x < -36)
+        matrix.print(F(x));
+        if (--x < -96)
         {
             x = matrix.width();
             if (++pass >= 3)
                 pass = 0;
-            matrix.setTextColor(color);
+            matrix.setTextColor(colors[pass]);
         }
         matrix.show();
     }
