@@ -12,18 +12,8 @@ void setup()
     M5.dis.clear();
 }
 
-uint8_t DisBuff[2 + 5 * 5 * 3];
-
-void setBuff(uint8_t Rdata, uint8_t Gdata, uint8_t Bdata)
-{
-    DisBuff[0] = 0x05;
-    DisBuff[1] = 0x05;
-    for (int i = 0; i < 25; i++)
-    {
-        DisBuff[2 + i * 3 + 0] = Rdata;
-        DisBuff[2 + i * 3 + 1] = Gdata;
-        DisBuff[2 + i * 3 + 2] = Bdata;
-    }
+void fillPix(unsigned int color){
+    for (int i = 0; i < 25; i++) M5.dis.drawpix(color);
 }
 
 uint8_t state = 0;
@@ -53,15 +43,14 @@ int fadeDelay = 500;
 
 unsigned int accZFade = 0;
 
-void strobe(uint8_t r, uint8_t g, uint8_t b)
+void strobe(unsigned int color)
 {
     currentTime = millis();
     if (currentTime - prevTime > strobeDelay)
     {
         if (strobeFlag)
         {
-            setBuff(r, g, b);
-            M5.dis.displaybuff(DisBuff);
+            fillPix(color);
         }
         else
             M5.dis.clear();
@@ -83,7 +72,7 @@ void loop()
         if (state >= 5)
             state = 0;
 
-        Serial.printf("Changed State to " + modes[state]);
+        Serial.print("Changed State to " + modes[state]);
 
         if (state == 0)
             M5.dis.clear();
@@ -97,12 +86,12 @@ void loop()
     case 1: // Manual Red Strobe
     {
 
-        strobe(255, 0, 0);
+        strobe(0x00ff00);
         break;
     }
     case 2: // Manual White Strobe
     {
-        strobe(255, 255, 255);
+        strobe(0xffffff);
         break;
     }
     case 3: // Automatic Red Strobe
