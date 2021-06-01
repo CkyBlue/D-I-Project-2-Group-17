@@ -199,13 +199,11 @@ Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(5, 5, PIN,
   NEO_MATRIX_TOP     + NEO_MATRIX_LEFT +
   NEO_MATRIX_ROWS + NEO_MATRIX_PROGRESSIVE,
   NEO_GRB            + NEO_KHZ800);
-uint16_t colors[] = {
-  matrix.Color(255, 0, 0), matrix.Color(0, 255, 0), matrix.Color(0, 0, 255) };
 class display
 {
 private:
 
-    //uint16_t color;
+    uint16_t color;
     
     char unit;
     int x, pass;
@@ -218,8 +216,8 @@ public:
         matrix.begin();
         matrix.setTextWrap(false);
         matrix.setBrightness(LED_brightness);
-        matrix.setTextColor(colors[0]);
-        //color = matrix.Color(255, 255, 255);
+        matrix.setTextColor(color);
+        color = matrix.Color(255, 255, 255);
         temperature = 0;
         x = 0;
         pass = 0;
@@ -250,14 +248,15 @@ public:
         matrix.setCursor(x, 0);
         String u = "";
         u.concat(temperature);
+        Serial.print(u);
         u += unit;
-        matrix.print(F(x));
+        matrix.print(u);
         if (--x < -96)
         {
             x = matrix.width();
             if (++pass >= 3)
                 pass = 0;
-            matrix.setTextColor(colors[pass]);
+            matrix.setTextColor(color);
         }
         matrix.show();
     }
@@ -265,8 +264,25 @@ public:
 
 SensorData tl;
 display ds;
-void getUnit()
-{
+
+void update(){
+    currentMillis = millis();
+
+    if (currentMillis - millisOfLastButtonUpdate > millisBetweenButtonUpdate)
+    {
+        M5.update();
+        tl.fetchAcc();
+        tilt = tl.isTilted();
+        millisOfLastButtonUpdate = millis();
+    }
+
+    if (currentMillis - millisOfLastTempUpdate > millisBetweenTempUpdate)
+    {
+        //M5.IMU.getTempData(&temp);
+        Serial.printf("Temperature: %.2f °C \n", tl.getActiveTemp());
+        tl.addtotemparr(tl.getActiveTemp()); //recalculate 24 hr average and update data
+        millisOfLastTempUpdate = millis();
+    }
 }
 
 void mode4()
@@ -285,15 +301,12 @@ void setup()
 }
 void loop()
 {
+    update();
     if (IMU6886Flag == true)
     {
         tilt = tl.isTilted();
-        Serial.print(tilt);
-        Serial.print(tl.isTap());
-        Serial.print('\n');
         if ((M5.Btn.wasPressed() || tl.isTap()) && (tilt == 'u'))
         {
-            millisOfLastTiltUpdate = millis();
             Serial.printf("upwards\n");
             isDownwards = false;
             positionChanged = false;
@@ -315,7 +328,7 @@ void loop()
                         break;
                     case 1:
                         //24hr temp
-                        Serial.printf("mode 1\n");
+                        Serial.printf("mode 2\n");
 
                         millisOfLastTiltUpdate = millis();
                         ds.displayTemperature(tl.get24Average());
@@ -323,52 +336,33 @@ void loop()
 
                         break;
                     case 2:
-                        Serial.printf("mode 2\n");
-
-                        tl.levelChangerSensor(level, positionChanged, isDownwards);
-
-                        break;
-                    case 3:
                         Serial.printf("mode 3\n");
 
                         tl.levelChangerSensor(level, positionChanged, isDownwards);
 
                         break;
-                    case 4:
+                    case 3:
                         Serial.printf("mode 4\n");
+
+                        tl.levelChangerSensor(level, positionChanged, isDownwards);
+
+                        break;
+                    case 4:
+                        Serial.printf("mode 5\n");
 
                         mode4();
 
                         tl.levelChangerSensor(level, positionChanged, isDownwards);
 
                         break;
-                    case 5:
-                        Serial.printf("mode 5\n");
-
-                        tl.levelChangerSensor(level, positionChanged, isDownwards);
-                        break;
                     default:
                         break;
+
                     }
+                    update();
                 }
             }
         }
     }
-    currentMillis = millis();
-
-    if (currentMillis - millisOfLastButtonUpdate > millisBetweenButtonUpdate)
-    {
-        M5.update();
-        tl.fetchAcc();
-        tilt = tl.isTilted();
-        millisOfLastButtonUpdate = millis();
-    }
-
-    if (currentMillis - millisOfLastTempUpdate > millisBetweenTempUpdate)
-    {
-        //M5.IMU.getTempData(&temp);
-        Serial.printf("Temperature: %.2f °C \n", tl.getActiveTemp());
-        tl.addtotemparr(tl.getActiveTemp()); //recalculate 24 hr average and update data
-        millisOfLastTempUpdate = millis();
-    }
+    
 }
