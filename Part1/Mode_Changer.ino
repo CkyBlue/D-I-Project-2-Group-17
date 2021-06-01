@@ -7,6 +7,7 @@
 #define PIN 27
 #define array_size 5
 #define LED_brightness 85
+#define temp_array_size 24
 using namespace std;
 float temp = 0;
 bool IMU6886Flag = true;
@@ -18,7 +19,7 @@ uint8_t FSM = 0;
 uint8_t level = 0;
 char tilt = 'a';
 unsigned long millisOfLastTempUpdate = 0;
-unsigned long millisBetweenTempUpdate = 2000;
+unsigned long millisBetweenTempUpdate = 86400000;
 unsigned long millisOfLastButtonUpdate = 0;
 unsigned long millisBetweenButtonUpdate = 50;
 unsigned long millisOfLastTiltUpdate = 0;
@@ -27,14 +28,16 @@ unsigned long currentMillis = 0;
 class SensorData
 {
 private:
-    float acZ[array_size]; //aceleration Z for past 5 Timestamps
-    float temp[36];//temperature sampled every 30min
+    float acZ[array_size];               //aceleration Z for past 5 Timestamps
+    float temp[temp_array_size] = {-50}; //temperature sampled every hour
     float acZbef;
+    int index;
     int i;
     float accX, accY, accZ;
     float gyroX, gyroY, gyroZ;
     float pitch, roll, yaw;
     float Activetemperature;
+    float Average24;
 
 public:
     SensorData()
@@ -46,7 +49,9 @@ public:
         gyroY = 0;
         gyroZ = 0;
         Activetemperature = 0;
+        Average24 = 0;
         i = 0;
+        index = 0;
     }
     void update()
     {
@@ -81,6 +86,33 @@ public:
     void fetchAngles()
     {
         M5.IMU.getAhrsData(&pitch, &roll, &yaw);
+    }
+    float get24Average()
+    {
+        return Average24;
+    }
+    void addtotemparr(float temperature)
+    {
+        if (index >= temp_array_size)
+        {
+            index = 0;
+        }
+        temp[index] = temperature;
+        index++;
+    }
+    void setAverage()
+    {
+        float sum;
+        int z = 0;
+        for (int i = 0; i < temp_array_size; i++)
+        {
+            if (temp[i] != -50)
+            {
+                sum += temp[i];
+                z++;
+            }
+        }
+        Average24 = sum / (float)z;
     }
     float getActiveTemp()
     {
@@ -171,40 +203,50 @@ private:
                                                        NEO_MATRIX_COLUMNS + NEO_MATRIX_PROGRESSIVE,
                                                    NEO_GRB + NEO_KHZ800);
     uint16_t color;
-    char unit;int x,pass;
+    char unit;
+    int x, pass;
+    float temperature;
+
 public:
     display()
     {
-        //farenheight C and kelvin
+        //farenheight C and kelvin DEFAULT DEGREES C
         matrix.begin();
         matrix.setTextWrap(false);
         matrix.setBrightness(LED_brightness);
         matrix.setTextColor(color);
         color = matrix.Color(255, 255, 255);
-        x=0;
-        pass=0;
+        temperature = 0;
+        x = 0;
+        pass = 0;
         unit = 'C';
     }
     void changeUnit()
     {
-        if(unit=='C'){
-            temperature+=273.15;
-            unit=='K';
-        } else if(unit=='K') {
-            temperature=(temperature-273.15)*9/5+32;
-            unit=='F';
-        } else {
-            temperature=(temperature-32)*5/9;
-            unit=='C';
+        if (unit == 'C')
+        {
+            temperature += 273.15;
+            unit == 'K';
+        }
+        else if (unit == 'K')
+        {
+            temperature = (temperature - 273.15) * 9 / 5 + 32;
+            unit == 'F';
+        }
+        else
+        {
+            temperature = (temperature - 32) * 5 / 9;
+            unit == 'C';
         }
     }
-    void displayTemperature(float temperature)
+    void displayTemperature(float temp)
     {
+        temperature = temp;
         matrix.fillScreen(0);
         matrix.setCursor(x, 0);
-        String u="";
+        String u = "";
         u.concat(temperature);
-        u+=unit;
+        u += unit;
         matrix.print(x);
         if (--x < -36)
         {
@@ -215,7 +257,6 @@ public:
         }
         matrix.show();
     }
-    
 };
 
 SensorData tl;
@@ -235,12 +276,13 @@ void setup()
         IMU6886Flag = false;
     else
         IMU6886Flag = true;
+    tl.fetchAcc();
+    tl.addtotemparr(tl.getActiveTemp());
 }
 void loop()
 {
     if (IMU6886Flag == true)
     {
-        tl.fetchAcc();
         tilt = tl.isTilted();
         Serial.print(tilt);
         Serial.print(tl.isTap());
@@ -250,108 +292,59 @@ void loop()
             millisOfLastTiltUpdate = millis();
             Serial.printf("upwards\n");
             isDownwards = false;
-            while (isDownwards == false)
+            positionChanged = false;
+            while (!isDownwards && !positionChanged)
             {
-                switch (level)
+                currentMillis = millis();
+                if (currentMillis - millisOfLastTiltUpdate > millisBetweenTiltUpdate)
                 {
-                case 0:
-                    Serial.printf("screen activated\n");
-                    positionChanged = false;
-                    while (positionChanged == false)
+                    tl.fetchAcc();
+                    tilt = tl.isTilted();
+                    millisOfLastTiltUpdate = millis();
+                    switch (level)
                     {
-                        currentMillis = millis();
-                        if (currentMillis - millisOfLastTiltUpdate > millisBetweenTiltUpdate)
-                        {
-                            tl.fetchAcc();
-                            ds.displayTemperature(tl.getActiveTemp());
-                            tilt = tl.isTilted();
-                            millisOfLastTiltUpdate = millis();
-                            tl.levelChangerSensor(level, positionChanged, isDownwards);
-                        }
-                    }
-                    break;
-                case 1:
-                    //24hr temp
-                    Serial.printf("mode 1\n");
-                    positionChanged = false;
-                    while (positionChanged == false)
-                    {
-                        currentMillis = millis();
-                        if (currentMillis - millisOfLastTiltUpdate > millisBetweenTiltUpdate)
-                        {
-                            if(currentMillis-millisOfLastTiltUpdate>20*60*1000){
-                                tl.fetchAcc();
-                                tilt = tl.isTilted();
-                                millisOfLastTiltUpdate = millis();
-                                tl.levelChangerSensor(level, positionChanged, isDownwards);
-                            }
+                    case 0:
+                        Serial.printf("screen activated\n");
+                        ds.displayTemperature(tl.getActiveTemp());
+                        tl.levelChangerSensor(level, positionChanged, isDownwards);
+                        break;
+                    case 1:
+                        //24hr temp
+                        Serial.printf("mode 1\n");
 
-                        }
+                        millisOfLastTiltUpdate = millis();
+                        ds.displayTemperature(tl.get24Average());
+                        tl.levelChangerSensor(level, positionChanged, isDownwards);
+
+                        break;
+                    case 2:
+                        Serial.printf("mode 2\n");
+
+                        tl.levelChangerSensor(level, positionChanged, isDownwards);
+
+                        break;
+                    case 3:
+                        Serial.printf("mode 3\n");
+
+                        tl.levelChangerSensor(level, positionChanged, isDownwards);
+
+                        break;
+                    case 4:
+                        Serial.printf("mode 4\n");
+
+                        mode4();
+
+                        tl.levelChangerSensor(level, positionChanged, isDownwards);
+
+                        break;
+                    case 5:
+                        Serial.printf("mode 5\n");
+
+                        tl.levelChangerSensor(level, positionChanged, isDownwards);
+                        break;
+                    default:
+                        break;
                     }
-                    break;
-                case 2:
-                    Serial.printf("mode 2\n");
-                    positionChanged = false;
-                    while (positionChanged == false)
-                    {
-                        currentMillis = millis();
-                        if (currentMillis - millisOfLastTiltUpdate > millisBetweenTiltUpdate)
-                        {
-                            tl.fetchAcc();
-                            tilt = tl.isTilted();
-                            millisOfLastTiltUpdate = millis();
-                            tl.levelChangerSensor(level, positionChanged, isDownwards);
-                        }
-                    }
-                    break;
-                case 3:
-                    Serial.printf("mode 3\n");
-                    positionChanged = false;
-                    while (positionChanged == false)
-                    {
-                        currentMillis = millis();
-                        if (currentMillis - millisOfLastTiltUpdate > millisBetweenTiltUpdate)
-                        {
-                            tl.fetchAcc();
-                            tilt = tl.isTilted();
-                            millisOfLastTiltUpdate = millis();
-                            tl.levelChangerSensor(level, positionChanged, isDownwards);
-                        }
-                    }
-                    break;
-                case 4:
-                    Serial.printf("mode 4\n");
-                    mode4();
-                    positionChanged = false;
-                    while (positionChanged == false)
-                    {
-                        currentMillis = millis();
-                        if (currentMillis - millisOfLastTiltUpdate > millisBetweenTiltUpdate)
-                        {
-                            tl.fetchAcc();
-                            tilt = tl.isTilted();
-                            millisOfLastTiltUpdate = millis();
-                            tl.levelChangerSensor(level, positionChanged, isDownwards);
-                        }
-                    }
-                    break;
-                case 5:
-                    Serial.printf("mode 5\n");
-                    positionChanged = false;
-                    while (positionChanged == false)
-                    {
-                        currentMillis = millis();
-                        if (currentMillis - millisOfLastTiltUpdate > millisBetweenTiltUpdate)
-                        {
-                            tl.fetchAcc();
-                            tilt = tl.isTilted();
-                            millisOfLastTiltUpdate = millis();
-                            tl.levelChangerSensor(level, positionChanged, isDownwards);
-                        }
-                    }
-                    break;
-                default:
-                    break;
                 }
             }
         }
@@ -361,14 +354,16 @@ void loop()
     if (currentMillis - millisOfLastButtonUpdate > millisBetweenButtonUpdate)
     {
         M5.update();
+        tl.fetchAcc();
+        tilt = tl.isTilted();
         millisOfLastButtonUpdate = millis();
     }
 
     if (currentMillis - millisOfLastTempUpdate > millisBetweenTempUpdate)
     {
-        M5.IMU.getTempData(&temp);
-        Serial.printf("Temperature: %.2f °C \n", temp);
+        //M5.IMU.getTempData(&temp);
+        Serial.printf("Temperature: %.2f °C \n", tl.getActiveTemp());
+        tl.addtotemparr(tl.getActiveTemp()); //recalculate 24 hr average and update data
         millisOfLastTempUpdate = millis();
     }
-    delay(50);
 }
