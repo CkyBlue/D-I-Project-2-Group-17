@@ -274,7 +274,6 @@ public:
             output.concat(temperature);
             Serial.print(output);
             output += unit;
-        } else {
             resetScreen();
         }
 
@@ -352,7 +351,7 @@ void loop()
                     {
                     case 0:
                         Serial.printf("screen activated\n");
-                        ds.displayTemperature(tl.getActiveTemp());//NO GO because its changing
+                        //ds.displayTemperature(tl.getActiveTemp());//NO GO because its changing
 
                         tl.levelChangerSensor(level, positionChanged, isDownwards);
                         break;
@@ -361,7 +360,7 @@ void loop()
                         Serial.printf("mode 2\n");
 
                         millisOfLastTiltUpdate = millis();
-                        ds.displayTemperature(tl.get24Average());
+                        //ds.displayTemperature(tl.get24Average());
                         tl.levelChangerSensor(level, positionChanged, isDownwards);
 
                         break;
