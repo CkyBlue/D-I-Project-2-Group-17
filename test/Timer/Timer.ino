@@ -12,11 +12,11 @@ int pauseTimer = 0;
 
 bool isPaused()
 {
-    M5.update();
-    delay(10);
-  
     if (pauseTimer > 0)
     {
+        delay(10);
+        M5.update();
+
         pauseTimer -= 10;
         return true;
     }
@@ -27,12 +27,18 @@ void pause(unsigned int delay){ pauseTimer += delay; }
 
 bool strobeFlag = true;
 
+void fillPix(unsigned int color)
+{
+    for (int i = 0; i < 25; i++)
+        M5.dis.drawpix(i, color);
+}
+
 void strobe(unsigned int color){
     strobeFlag = !strobeFlag;
     if (strobeFlag){
-        M5.dis.drawpix(12, color);
+        fillPix(color);
     } else {
-        M5.dis.drawpix(12, 0x000000);
+        fillPix(0x000000);
     }
     pause(1000);
 }
@@ -46,13 +52,11 @@ void loop()
         resetPause();
 
         state++;
-        if (state > 1)
+        if (state >= 2)
             state = 0;
 
-        Serial.printf("Mode %.2f \n", state);
-        
-         M5.update();
-         delay(20);
+        delay(10);
+        M5.update();
         return;
     }
 
@@ -61,15 +65,13 @@ void loop()
 
     switch (state){
         case 0: {
-          Serial.print("Red\n");
             strobe(0x00ff00); break;
         }
         case 1: {
-          Serial.print("White\n");
             strobe(0xffffff); break;
         }
     }
     
-    M5.update();
     delay(10);
+    M5.update();
 }

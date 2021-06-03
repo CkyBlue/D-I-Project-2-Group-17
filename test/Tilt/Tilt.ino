@@ -1,78 +1,152 @@
 #include "M5Atom.h"
 
-uint8_t DisBuff[2 + 5 * 5 * 3];
+// Orientation: 0 - Facing Up, 1 - Facing Left, 2 - Facing Right, 3 - LED Facing Towards Holder, 4 - LED Facing Away, 5 - Upside Down
 
-void setBuff(uint8_t Rdata, uint8_t Gdata, uint8_t Bdata)
+enum Dir
 {
-    DisBuff[0] = 0x05;
-    DisBuff[1] = 0x05;
-    for (int i = 0; i < 25; i++)
-    {
-        DisBuff[2 + i * 3 + 0] = Rdata;
-        DisBuff[2 + i * 3 + 1] = Gdata;
-        DisBuff[2 + i * 3 + 2] = Bdata;
-    }
-}
-
-void setup()
-{
-    M5.begin(true, true, true);
-    M5.IMU.Init();
-
-    delay(10);
-}
+   UP = 0,
+   LEFT = 1,
+   RIGHT = 2,
+   BACK = 3,
+   FRONT = 4,
+   DOWN = 5
+};
 
 float pitch, roll, yaw;
-float rad = PI / 180;
+int getOrientation()
+{
+   M5.IMU.getAhrsData(&pitch, &roll, &yaw);
+
+   if (isEqual(pitch, 0) && isEqual(abs(roll), 180))
+      return Dir::UP;
+   else if (isEqual(pitch, 90))
+      return Dir::LEFT;
+   else if (isEqual(pitch, -90))
+      return Dir::RIGHT;
+   else if (isEqual(roll, 90))
+      return Dir::BACK;
+   else if (isEqual(roll, -90))
+      return Dir::FRONT;
+   else if (isEqual(abs(pitch), 0) && isEqual(abs(roll), 0))
+      return Dir::DOWN;
+   return -1;
+}
+
+int currentOrientation = 0;
+int prevOrientation = -1;
+void setup()
+{
+   M5.begin(true, true, true);
+   M5.IMU.Init();
+
+   M5.dis.clear();
+   delay(10);
+}
 
 int updateDelay = 50;
 
-int state = 0;
-int newState = 0;
 int constraint = 20;
 
-bool isEqual(int val, int goal){return val >= goal - constraint && val <= goal + constraint;}
+bool isEqual(int val, int goal) { return val >= goal - constraint && val <= goal + constraint; }
 
+bool checkOrientation()
+{
+   int orientation = getOrientation();
+   if (orientation == -1)
+      return false;
+
+   currentOrientation = orientation;
+   bool ans = (prevOrientation != currentOrientation);
+
+   return ans;
+}
+
+String orientationText[] = {"Facing Up", "Facing Left", "Facing Right", "LED Facing Towards Holder", "LED Facing Away", "Upside Down"};
+String modesText[] = {"I - Show Active Temp", "II - Show 24 Hr Avg", "III - Temperature Gradient", "IV - Graph", "V - Change Units"};
+
+int state = -1;
+void incMode() { if (state < 4) state++; else state = 0; }
+void decMode() { if (state > 0) state--; else state = 4; }
+
+bool activeDisplay = false;
 void loop()
 {
-    M5.dis.clear();
-    
-    M5.IMU.getAhrsData(&pitch, &roll, &yaw);
-    //Serial.printf("%.2f, %.2f \n", pitch, roll);
-  
-    if (isEqual(pitch, 0) && isEqual(abs(roll), 180))
-      newState = 0;
-    else if (isEqual(pitch, 90))
-       newState = 1;
-    else if (isEqual(pitch, -90))
-       newState = 2;
-    else if (isEqual(roll, 90))
-       newState = 3;
-    else if (isEqual(roll, -90))
-       newState = 4;
-    else if (isEqual(abs(pitch), 0) && isEqual(abs(roll), 0))
-       newState = 5;
-      
-    if (newState != state){
-      state = newState;
-      switch (state){
-        case 0:
-         {Serial.print("Mode Facing Up\n"); break;}
-         case 1:
-         {Serial.print("Mode Left\n"); break;}
-         case 2:
-         {Serial.print("Mode Right\n"); break;}
-         case 3:
-         {Serial.print("Mode Front\n"); break;}
-         case 4:
-         {Serial.print("Mode Back\n"); break;}
-         case 5:
-         {Serial.print("Mode Upside Down\n"); break;}
-        }
-     }
-//    setBuff(0xff, 0x00, 0x00);
-//    M5.dis.displaybuff(DisBuff);
-    
-    delay(updateDelay);
-    M5.update();
+   int orientation = getOrientation();
+   bool wasOrientationChanged = false;
+
+   if (orientation != -1)
+      currentOrientation = orientation;
+
+   wasOrientationChanged = (prevOrientation != currentOrientation);
+   if (wasOrientationChanged)
+   {
+      Serial.print("Orientation - " + orientationText[currentOrientation] + "\n");
+
+      if (activeDisplay)
+      {
+         if (currentOrientation == Dir::UP)
+         {
+            if (prevOrientation == Dir::RIGHT) { incMode(); Serial.print("Mode " + String(state + 1) + " - " + modesText[state] + "\n");}
+            if (prevOrientation == Dir::LEFT) { decMode(); Serial.print("Mode " + String(state + 1)  + " - " + modesText[state] + "\n");}
+
+            
+         }
+         
+         if (currentOrientation == Dir::DOWN)
+         {
+            state = -1;
+            activeDisplay = false;
+
+            Serial.print("Display Turned Off\n");
+            M5.dis.clear();
+         }
+      }
+   }
+
+   prevOrientation = currentOrientation;
+
+   if (!activeDisplay && currentOrientation == UP)
+   {
+      if (M5.Btn.wasPressed())
+      {
+         activeDisplay = true;
+         state = 0;
+
+         Serial.print("Display Turned On\n");
+         Serial.print("Mode " + String(state + 1)  + " - " + modesText[state] + "\n");
+      }
+   }
+
+   if (!activeDisplay)
+   { // Background Reading mode
+   }
+   else
+   {
+      M5.dis.clear();
+
+      switch (state)
+      {
+      case 0: // Show active Temp
+      {
+        
+
+         break;
+      }
+      case 1: // Show 24 Hr Avg
+      {
+
+         break;
+      }
+      case 2: // Temperature Gradient
+      {
+
+         break;
+      }
+      default:
+         break;
+      }
+   }
+
+   delay(updateDelay);
+   M5.update();
 }
