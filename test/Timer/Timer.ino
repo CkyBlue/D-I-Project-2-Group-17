@@ -23,7 +23,7 @@ bool isPaused()
     return false;
 }
 void resetPause(){ pauseTimer = 0; }
-void pause(unsigned int delay){ pauseTimer += delay; }
+void pause(unsigned int pause){ pauseTimer += pause; }
 
 bool strobeFlag = true;
 

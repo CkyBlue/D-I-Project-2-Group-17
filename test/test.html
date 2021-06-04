@@ -1,11 +1,15 @@
 <!DOCTYPE html>
+<html>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 
     <style>
-        * {box-sizing: border-box}
+        * {
+            box-sizing: border-box
+        }
 
         .tab {
             float: left;
@@ -46,54 +50,61 @@
         }
     </style>
 </head>
+
 <body>
     <div class="tab">
-
         <button class="tablinks" id="defaultOpen" onclick="openColor(event, 'Red')">Red</button>
         <button class="tablinks" onclick="openColor(event, 'Green')">Green</button>
         <button class="tablinks" onclick="openColor(event, 'Blue')">Blue</button>
-      </div>
-      
-      <div id="Red" class="tabcontent">
+    </div>
+
+    <div id="Red" class="tabcontent">
         <h3>Red</h3>
         <p>LED Lights up to color Red.</p>
-      </div>
-      
-      <div id="Green" class="tabcontent">
+    </div>
+
+    <div id="Green" class="tabcontent">
         <h3>Green</h3>
         <p>LED Lights up to color Green.</p>
-      </div>
-      
-      <div id="Blue" class="tabcontent">
+    </div>
+
+    <div id="Blue" class="tabcontent">
         <h3>Blue</h3>
         <p>LED Lights up to color Blue.</p>
-      </div>
+    </div>
+
+    <a style="color:red;" href="/Red">Red</a><br>
+    <a style="color:green;"href="/Green">Green</a><br>
+    <a style="color:blue;" href="/Blue">Blue</a><br>
+
 </body>
 <script>
     function openColor(evt, colorName) {
-    // Declare all variables
-    var i, tabcontent, tablinks;
+        var i, tabcontent, tablinks;
 
-    tabcontent = document.getElementsByClassName("tabcontent");
-    for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].style.display = "none";
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+
+        document.getElementById(colorName).style.display = "block";
+        evt.currentTarget.className += " active";
+
+        fetch('/' + colorName).then(function (response) {
+            console.log('Success!', response);
+        }).catch(function (err) {
+            console.warn('Something went wrong.', err);
+        });
     }
 
-    tablinks = document.getElementsByClassName("tablinks");
-    for (i = 0; i < tablinks.length; i++) {
-        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    window.onload = function (e) {
+        document.getElementById("defaultOpen").click();
     }
-
-    document.getElementById(colorName).style.display = "block";
-    evt.currentTarget.className += " active";
-
-    fetch('/'+ colorName).then(function (response) {
-        console.log('Success!', response);
-    }).catch(function (err) {
-        console.warn('Something went wrong.', err);
-    });
-    }
-
-    document.getElementById("defaultOpen").click();
 </script>
+
 </html>
