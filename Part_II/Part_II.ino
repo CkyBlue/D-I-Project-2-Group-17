@@ -10,7 +10,7 @@
 
 #include "M5Atom.h"
 
-int updateDelay = 50;
+int updateDelay = 30;
 CustomText tx;
 
 enum Unit {C = 0, K = 1, F = 2};
@@ -34,7 +34,7 @@ float round_to_2dp(float num){
 // Mode I & 2
 String tempString = "";
 int textCursor = 0;
-int textScrollDelay = 500; // milliseconds
+int textScrollDelay = 300; // milliseconds
 int textColor = 0xffffff; // White
 
 // TODO Accomodate current Unit
@@ -67,8 +67,8 @@ int gradientBlinkDelay = 250; // milliseconds
 
 // Mode IV
 int graphXCursor = 0;
-int graphScrollDelay = 500;
-int graphWrapDelay = 2000;
+int graphScrollDelay = 250;
+int graphWrapDelay = 500;
 
 bool scrollGraph(){
    hourlyAverages; 
@@ -98,8 +98,8 @@ bool scrollGraph(){
 
 void loop()
 {
-   //bool wasStateChanged = refreshMode(); // Handles all mode transition related stuff
-
+   bool wasStateChanged = refreshMode(); // Handles all mode transition related stuff
+ 
    if (M5.Btn.wasPressed()){
       state++;
       if (state > 4) { state = -1; activeDisplay = false; } 
@@ -108,6 +108,7 @@ void loop()
 
    if (wasStateChanged){
       resetPause();
+      
 
       if (state != -1)
          Serial.print("\nMode - " + modesText[state] + "\n");
@@ -129,13 +130,13 @@ void loop()
    }
 
    // Custom Delay Implementation
-   if (isPaused()) return;
+   if (!isPaused()){
 
    if (!activeDisplay)
    { // Background Reading mode
       updateTemperatureData();
       enqueueTemperatureData();
-
+    
       pause(samplingDelay * 1000);
       M5.update();
       return;
@@ -175,7 +176,8 @@ void loop()
          break;
       }
    }
-
+   }
+ 
    delay(updateDelay);
    M5.update();
 }
