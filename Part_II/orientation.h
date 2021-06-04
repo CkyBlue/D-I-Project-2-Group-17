@@ -13,13 +13,15 @@ int getOrientation()
    M5.update();
 
    if (isEqual(pitch, 0) && isEqual(abs(roll), 180)) 
+   {
       return Dir::UP;
-   else if (isEqual(pitch, 90)) return Dir::LEFT;
-   else if (isEqual(pitch, -90)) return Dir::RIGHT;
-   else if (isEqual(roll, 90)) return Dir::BACK;
-   else if (isEqual(roll, -90)) return Dir::FRONT;
+   }
+   else if (isEqual(pitch, 90)) {return Dir::LEFT; }
+   else if (isEqual(pitch, -90)) {return Dir::RIGHT; }
+   else if (isEqual(roll, 90)) {return Dir::BACK; }
+   else if (isEqual(roll, -90)) {return Dir::FRONT;}
    else if (isEqual(abs(pitch), 0) && isEqual(abs(roll), 0))
-      return Dir::DOWN;
+      {return Dir::DOWN;}
    return -1;
 }
 
