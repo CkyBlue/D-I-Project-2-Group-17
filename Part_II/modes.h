@@ -10,15 +10,16 @@ void incMode() { if (state < 4) state++; else state = 0; }
 void decMode() { if (state > 0) state--; else state = 4; }
 
 bool activeDisplay = false;
+int orientation;
 
 bool refreshMode(){
-   int orientation = getOrientation();
+   orientation = getOrientation();
    bool wasOrientationChanged = false;
    bool wasStateChanged = false;
-
+   //Serial.print("Orientation - " +String(orientation) + "\n");
    if (orientation != -1)
       currentOrientation = orientation;
-
+  //mSerial.print("Orientation1 - " +String(currentOrientation) + "\n");
    wasOrientationChanged = (prevOrientation != currentOrientation);
    if (wasOrientationChanged)
    {
