@@ -10,6 +10,7 @@ float pitch, roll, yaw;
 int getOrientation()
 {
    M5.IMU.getAhrsData(&pitch, &roll, &yaw);
+   M5.update();
 
    if (isEqual(pitch, 0) && isEqual(abs(roll), 180)) 
       return Dir::UP;

@@ -98,12 +98,19 @@ bool scrollGraph(){
 
 void loop()
 {
-   bool wasStateChanged = refreshMode(); // Handles all mode transition related stuff
+   //bool wasStateChanged = refreshMode(); // Handles all mode transition related stuff
+
+   if (M5.Btn.wasPressed()){
+      state++;
+      if (state > 4) { state = -1; activeDisplay = false; } 
+      else { activeDisplay = true;}
+   }
 
    if (wasStateChanged){
       resetPause();
 
-      Serial.print("\nMode - " + modesText[state] + "\n");
+      if (state != -1)
+         Serial.print("\nMode - " + modesText[state] + "\n");
 
       switch (state)
       {
