@@ -1,14 +1,7 @@
+#include "colors.h"
+#include "grid.h"
+#include "scaling.h"
 #include "M5Atom.h"
-
-int max_temp = 50;
-int min_temp = -5;
-
-// Size = 16
-unsigned int gradient[] = {
-0x5350fd, 0x7454fc, 0x8f59fd, 0xa961fe, 0xc563ff,
-0xe26afe, 0xe57fd7, 0xe88bb8, 0xeca191, 0xedb668,
-0xeec34d, 0xddd13d, 0xbddb3f, 0x9be344, 0x79ec46, 0x50f54c
-};
 
 void setup()
 {
@@ -18,21 +11,6 @@ void setup()
   M5.dis.clear();
   //displayGradient(true);
   delay(10);
-}
-
-unsigned int toGrid(int x, int y) { return 5 * y + x; }
-
-// idx - 0 to 15, Maps to circle
-unsigned int mapCircular(unsigned int idx)
-{
-  if (idx < 5)
-    return toGrid(0, 4 - idx);
-  else if (idx < 9)
-    return toGrid(idx - 4, 0);
-  else if (idx < 13)
-    return toGrid(4, idx - 8);
-  else
-    return toGrid(16 - idx, 4);
 }
 
 void displayGradient(bool step)
@@ -50,16 +28,6 @@ void displayGradient(bool step)
       delay(50);
     }
   }
-}
-
-float mapScales(float originMin, float originMax, float val, float targetMin, float targetMax)
-{
-  return (((val - originMin) / (originMax - originMin)) * (targetMax - targetMin)) + targetMin;
-}
-
-int tempToGradientIndex(int temp)
-{
-  return round(mapScales(min_temp, max_temp, temp, 0, 15));
 }
 
 int cur_temp = 25;

@@ -12,6 +12,7 @@ void setup()
   delay(10);
 }
 
+// Pos - 0 to 4, Height - 1 to 5
 void drawBar(int x_pos, int height, unsigned int color)
 {
   for (int i = 0; i < height; i++)
@@ -55,7 +56,7 @@ void loop()
   for (int i = 0; i < 5; i++)
   {
     int height = heights[idx + i];
-    unsigne int color = gradient[round(mapScales(1, 5, height, 0, 15))];
+    unsigned int color = gradient[round(mapScales(1, 5, height, 0, 15))];
     drawBar(i, height, color);
   }
 

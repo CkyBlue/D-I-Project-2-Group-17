@@ -2,6 +2,11 @@
     "files.associations": {
         "chrono": "cpp",
         "atomic": "cpp",
-        "iosfwd": "cpp"
+        "iosfwd": "cpp",
+        "initializer_list": "cpp",
+        "xstring": "cpp",
+        "xutility": "cpp",
+        "xiosbase": "cpp",
+        "xlocale": "cpp"
     }
 }
