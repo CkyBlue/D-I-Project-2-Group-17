@@ -10,7 +10,7 @@
 
 #include "M5Atom.h"
 
-int updateDelay = 30;
+int updateDelay = 50;
 CustomText tx;
 
 enum Unit {C = 0, K = 1, F = 2};
@@ -34,19 +34,28 @@ float round_to_2dp(float num){
 // Mode I & 2
 String tempString = "";
 int textCursor = 0;
-int textScrollDelay = 300; // milliseconds
-int textColor = 0xffffff; // White
+int textScrollDelay = 500; // milliseconds
+unsigned int textColor = 0xffffff; // White
+bool textBlinkFlag = false;
+int textBlinkDelay = 400;
 
 // TODO Accomodate current Unit
 void setTempText(float temp_in_cel){
    tempString = String(round_to_2dp(temp_in_cel)) + "*C";
    textCursor = 0;
-   textColor = tempToColor(currentTemp);
+   textBlinkFlag = false;
+   textColor = tempToColor(temp_in_cel);
+
+   Serial.print(String(textColor) + "\n");
 }
 
-void scrollTempText(){
-   if (tempString.length() == 0) return;
+bool scrollTempText(){
+   textBlinkFlag = !textBlinkFlag;
+  
+   if (tempString.length() == 0) return true;
 
+   if (!textBlinkFlag) return false;
+   
    if (textCursor >= tempString.length()) { // Blank at wrap-around 
       textCursor = -1;
       Serial.print("\n");
@@ -56,8 +65,9 @@ void scrollTempText(){
       tx.print(c, textColor);
       Serial.print(String(c));
    }
-
+   
    textCursor++;
+   return true;
 }
 
 // Mode III
@@ -67,21 +77,26 @@ int gradientBlinkDelay = 250; // milliseconds
 
 // Mode IV
 int graphXCursor = 0;
-int graphScrollDelay = 250;
-int graphWrapDelay = 500;
+int graphScrollDelay = 500;
+int graphWrapDelay = 2000;
 
 bool scrollGraph(){
    hourlyAverages; 
 
    // If greater than 24 or at rouge value
-   if (graphXCursor > (24 - 5) || (hourlyAverages[graphXCursor] < -98.5 && hourlyAverages[graphXCursor] > -99.5)) {
+   if (graphXCursor > (24 - 5) || ((hourlyAverages[graphXCursor] < -98.5 && hourlyAverages[graphXCursor] > -99.5) && (graphXCursor != 0))) {      
       graphXCursor = 0;
       return false;
+      
    }
 
    int temp;
    for (int i = 0; i < 5; i++) {
       temp = hourlyAverages[graphXCursor + i];
+      if (temp< -98.5 && temp > -99.5) {
+        if (graphXCursor == 0 && i == 0) temp = currentTemp;   
+        else break;
+      };
 
       int height = getBarHeightFromTemp(temp);
       int index = round(mapScales(1, 5, height, 0, 15));
@@ -99,30 +114,23 @@ bool scrollGraph(){
 void loop()
 {
    bool wasStateChanged = refreshMode(); // Handles all mode transition related stuff
- 
-   if (M5.Btn.wasPressed()){
-      state++;
-      if (state > 4) { state = -1; activeDisplay = false; } 
-      else { activeDisplay = true;}
-   }
 
    if (wasStateChanged){
       resetPause();
-      
 
-      if (state != -1)
-         Serial.print("\nMode - " + modesText[state] + "\n");
+      Serial.print("\nMode - " + modesText[state] + "\n");
 
       switch (state)
       {
       case Mode_I: { setTempText(currentTemp); break; }
       case Mode_II: { setTempText(getAverageTemperature()); break; }
-      
+
       // Temperature Gradient
       case MODE_III: { currentTempColorPos = mapCircular(tempToGradientIndex(currentTemp)); break; }
 
       case MODE_IV: { graphXCursor = 0; updateHourlyAverages(); break; } // Temperature Graph
-      case MODE_V: { M5.dis.clear(); break; } // Off
+      case MODE_V: {  }
+      case -1: { M5.dis.clear(); break;} // Off
 
       default:
          break;
@@ -130,13 +138,13 @@ void loop()
    }
 
    // Custom Delay Implementation
-   if (!isPaused()){
+   if (isPaused()) return;
 
    if (!activeDisplay)
    { // Background Reading mode
       updateTemperatureData();
       enqueueTemperatureData();
-    
+
       pause(samplingDelay * 1000);
       M5.update();
       return;
@@ -149,7 +157,9 @@ void loop()
       {
       case Mode_I: // Show active Temp
       {
-         scrollTempText(); pause(textScrollDelay); return;
+         if (scrollTempText()){ pause (textScrollDelay);}
+         else pause (textBlinkDelay);
+         return;
       }
       case Mode_II: // Show 24 Hr Avg
       {
@@ -169,15 +179,11 @@ void loop()
             pause(graphScrollDelay);
          else
             pause(graphWrapDelay);
-         
+
          return;
       }
       default:
          break;
       }
    }
-   }
- 
-   delay(updateDelay);
-   M5.update();
 }
