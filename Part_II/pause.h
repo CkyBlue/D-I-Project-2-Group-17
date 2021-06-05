@@ -4,12 +4,12 @@
 int pauseTimer = 0; 
 bool isPaused()
 {
+    delay(50);
+    M5.update();
+        
     if (pauseTimer > 0)
     {
-        delay(10);
-        M5.update();
-
-        pauseTimer -= 10;
+        pauseTimer -= 50;
         return true;
     }
     return false;
