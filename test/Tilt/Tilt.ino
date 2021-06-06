@@ -1,4 +1,5 @@
 #include "M5Atom.h"
+#include "pause.h"
 
 enum Dir { UP = 0, LEFT = 1, RIGHT = 2, BACK = 3, FRONT = 4, DOWN = 5 };
 
@@ -91,6 +92,8 @@ void loop()
          Serial.print("Mode - " + modesText[state] + "\n");
       }
    }
+
+   if (isPaused()) return;
 
    // Orientation Handling Code -->
 
