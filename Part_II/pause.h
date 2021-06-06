@@ -1,15 +1,17 @@
 #pragma once
 #include "M5Atom.h"
 
+int updateDelay = 50; // milliseconds
+
 int pauseTimer = 0; 
 bool isPaused()
 {
-    delay(50);
+    delay(updateDelay);
     M5.update();
         
     if (pauseTimer > 0)
     {
-        pauseTimer -= 50;
+        pauseTimer -= updateDelay;
         return true;
     }
     return false;

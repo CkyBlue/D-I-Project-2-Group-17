@@ -1,4 +1,5 @@
 #pragma once
+
 #include <ArduinoQueue.h>
 #include "M5Atom.h"
 #include "scaling.h"

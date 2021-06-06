@@ -1,4 +1,5 @@
 #pragma once
+
 #include "temperature_record.h"
 #include "colors.h"
 
@@ -9,13 +10,10 @@ float mapScales(float originMin, float originMax, float val, float targetMin, fl
 
 int tempToGradientIndex(float temp)
 {
-  Serial.print("Temp: " + String(temp) + "\n");
-  Serial.print("Map Scales: " + String(mapScales(min_temp, max_temp, clampTemp(temp), 0, 15)) + "\n");
   return round(mapScales(min_temp, max_temp, clampTemp(temp), 0, 15));
 }
 
 int tempToColor(float temp){
-  Serial.print("Gradient Index: " + String(tempToGradientIndex(temp)) + "\n");
   return gradient[tempToGradientIndex(temp)];
 }
 
