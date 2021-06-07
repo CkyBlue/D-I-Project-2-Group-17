@@ -19,7 +19,7 @@ String getTempString(float temp_in_cel){
     switch (currentUnit){
         case Unit::C: return String(temp_in_cel) + "*C";
         case Unit::K: return String(cel_to_kel(temp_in_cel)) + "K";
-        case Unit::F: return String(cel_to_fah(temp_in_cel)) + "*F";
+        case Unit::F: return String(cel_to_fah(temp_in_cel)) + "F";
     }
 
     throw String("Invalid Unit!");
