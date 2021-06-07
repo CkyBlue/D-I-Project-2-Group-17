@@ -5,8 +5,8 @@
 #include "pause.h"
 
 int graphXCursor = 0;
-int graphScrollDelay = 500;
-int graphWrapDelay = 2000;
+int graphScrollDelay = 500;//millisecs
+int graphWrapDelay = 2000;//millisecs
 
 // Returns true when scrolling in progress, false at wrap-around point
 void scrollGraph()
