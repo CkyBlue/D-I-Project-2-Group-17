@@ -2,6 +2,7 @@
 
 #include "text.h"
 #include "pause.h"
+#include "temperature_units.h"
 
 float round_to_2dp(float num)
 {
@@ -18,10 +19,9 @@ unsigned int textColor = 0xffffff; // White
 bool textBlinkFlag = false;
 int textBlinkDelay = 400;
 
-// TODO Accomodate current Unit
 void setTempText(float temp_in_cel)
 {
-    tempString = String(round_to_2dp(temp_in_cel)) + "*C";
+    tempString = getTempString(temp_in_cel);
     textCursor = 0;
     textBlinkFlag = false;
     textColor = tempToColor(temp_in_cel);
@@ -51,4 +51,8 @@ void scrollTempText()
     
     pause(textScrollDelay); 
     return; 
+}
+
+void showUnit(){
+    tx.print(unitChar[currentUnit], 0xffffff);
 }

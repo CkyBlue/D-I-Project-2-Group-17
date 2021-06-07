@@ -6,11 +6,11 @@
 #include "text_scrolling.h"
 #include "gradient_blink.h"
 #include "temperature_record.h"
+#include "temperature_units.h"
 
 #include "M5Atom.h"
 
-enum Unit {C = 0, K = 1, F = 2};
-Unit currentUnit = Unit::C;
+bool standByFlag = true;
 
 void setup()
 {
@@ -28,7 +28,10 @@ void loop()
    if (wasStateChanged){
       resetPause();
 
-      Serial.print("\nMode - " + modesText[state] + "\n");
+      if (state != -1){
+         Serial.print("\nMode - " + modesText[state] + "\n");
+         standByFlag = true;
+      }
 
       switch (state)
       {
@@ -59,12 +62,23 @@ void loop()
    {
       M5.dis.clear();
 
+      if (standByFlag){
+         if (M5.Btn.wasPressed()) {
+            standByFlag = false;
+            return;
+         }
+
+         M5.dis.drawpix(toGrid(state, 2), 0xffffff);
+         return;
+      }
+
       switch (state)
       {
       case Mode_I: { scrollTempText(); return; }
       case Mode_II: { scrollTempText(); return; }
       case MODE_III: { blinkGradient(); return; }
       case MODE_IV: { scrollGraph(); return; }
+      case MODE_V: { showUnit(); if (M5.Btn.wasPressed()) incUnit(); return; }
       default: break;
       }
    }
