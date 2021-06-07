@@ -1,4 +1,5 @@
 #pragma once
+
 #include <ArduinoQueue.h>
 #include "M5Atom.h"
 #include "scaling.h"
@@ -15,16 +16,15 @@ float clampTemp(float temp){
 
 const unsigned int samplesPerHour = 4;
 
-// TODO - Transition from debug delay
 // In Seconds
-const unsigned int samplingDelay = 1; // 60 * 60 / samplesPerHour;
+const unsigned int samplingDelay = 60 * 60 / samplesPerHour;
 
 ArduinoQueue<float> temperatures(samplesPerHour * 24);
 float currentTemp = 0;
 
 void updateTemperatureData() { M5.IMU.getTempData(&currentTemp); }
 void enqueueTemperatureData() {
-  while (temperatures.itemCount() >= temperatures.maxQueueSize()) temperatures.dequeue();
+  while (temperatures.itemCount() >= temperatures.maxQueueSize()) {temperatures.dequeue(); Serial.print("while loop");}
   temperatures.enqueue(currentTemp);
 }
 
@@ -82,6 +82,8 @@ float getAverageTemperature(){
 
     sum += hourlyAvg;
   }
+
+  if (sum == 0) return currentTemp;
 
   return sum/hr;
 }

@@ -1,4 +1,5 @@
 #pragma once
+
 #include "temperature_record.h"
 #include "colors.h"
 
@@ -7,7 +8,7 @@ float mapScales(float originMin, float originMax, float val, float targetMin, fl
   return (((val - originMin) / (originMax - originMin)) * (targetMax - targetMin)) + targetMin;
 }
 
-int tempToGradientIndex(int temp)
+int tempToGradientIndex(float temp)
 {
   return round(mapScales(min_temp, max_temp, clampTemp(temp), 0, 15));
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+// x & y - 0 to 4
 unsigned int toGrid(int x, int y) { return 5 * y + x; }
 
 // idx - 0 to 15, Maps to circle

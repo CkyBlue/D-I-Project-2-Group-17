@@ -16,8 +16,8 @@ bool refreshMode(){
    bool wasOrientationChanged = false;
    bool wasStateChanged = false;
 
-   Serial.print("Orientation: " + String(orientation) + "\n");
-   Serial.print("Prev Orientation: " + String(prevOrientation) + "\n");
+   // Serial.print("Orientation: " + String(orientation) + "\n");
+   // Serial.print("Prev Orientation: " + String(prevOrientation) + "\n");
    
    if (orientation != -1)
       currentOrientation = orientation;

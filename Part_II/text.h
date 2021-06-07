@@ -21,9 +21,10 @@ class CustomText{
   int8_t px_deg[9] = {0, 1, 2, 5, 7, 10, 11, 12, -1};
   int8_t px_dot[5] = {17, 18, 22, 23, -1};
   int8_t px_blank[1] = {-1};
+  int8_t px_minus[4] = {11, 12, 13, -1};
   
   public:
-  void print(char c, int8_t color){
+  void print(char c, unsigned int color){
       M5.dis.clear();
       int8_t* arr = NULL;
       switch(c) {
@@ -43,6 +44,7 @@ class CustomText{
           case '*': {arr = px_deg; break;}
           case '.': {arr = px_dot; break;}
           case ' ': {arr = px_blank; break;}
+          case '-': {arr = px_minus; break;}
           default: break;
     }
     if (arr == NULL) return;
