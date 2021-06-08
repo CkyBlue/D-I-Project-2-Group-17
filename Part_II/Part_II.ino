@@ -1,6 +1,7 @@
 #include "modes.h"
 #include "pause.h"
 #include "scaling.h"
+#include "htmlhandler.h"
 #include "text.h"
 #include "graph_scrolling.h"
 #include "text_scrolling.h"
@@ -16,7 +17,7 @@ void setup()
 {
    M5.begin(true, true, true);
    M5.IMU.Init();
-
+   initialize();
    M5.dis.clear();
    delay(10);
 }
