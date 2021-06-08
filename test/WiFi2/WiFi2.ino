@@ -33,21 +33,15 @@ void setup(){
     IPAddress myIP = WiFi.softAPIP();
     Serial.print("AP IP address: ");
     Serial.println(myIP);
-    //server.begin();
-
-    /*   WiFi.begin(ssid, password);
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(1000);
-        Serial.println("Connecting to WiFi..");
-    }
-
-    Serial.println(WiFi.localIP()); */
 
     server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
         request->send(SPIFFS, "/index.html");
     });
     server.on("/temperature", HTTP_GET, [](AsyncWebServerRequest *request){
         request->send_P(200, "text/plain", getTemperature().c_str());
+    });
+    server.on(“/highcharts.js”, HTTP_GET, [](AsyncWebServerRequest *request){
+        request->send(SPIFFS, “/highcharts.js”, “text/javascript”);
     });
 
     server.begin();
