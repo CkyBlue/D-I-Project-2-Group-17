@@ -19,7 +19,7 @@ float round_to_2dp(float num)
     return t / 100.0f;
 }
 
-String getTemperature() { return String(round_to_2dp(num)); }
+String getTemperature() { return String(round_to_2dp(currentTemperature)); }
 
 void setup(){  
     currentTemperature = 45;
@@ -63,7 +63,7 @@ void loop(){
     }
 
     if (flag) currentTemperature += counter;
-    else currentTemperature -= (16 - counter)
+    else currentTemperature -= (16 - counter);
 
     delay(500);
 }
