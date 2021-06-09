@@ -6,7 +6,7 @@
 
 // Values outside range are clamped
 const int max_temp = 60;
-const int min_temp = -15;
+const int min_temp = -20;
 
 float clampTemp(float temp){
   if (temp > max_temp) temp = max_temp;
