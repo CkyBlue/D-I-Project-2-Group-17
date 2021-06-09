@@ -5,14 +5,12 @@
 #include <SPIFFS.h>
 
 #include "M5Atom.h"
+#include "temperature_record.h"
 
 const char* ssid = "CkyBlue";
 const char* password = "Electrolysis";
 
 AsyncWebServer server(80);
-
-float currentTemperature;
-float avgTemperature;
 
 float round_to_2dp(float num)
 {
@@ -20,15 +18,20 @@ float round_to_2dp(float num)
     return t / 100.0f;
 }
 
-String getTemperature() { return String(round_to_2dp(currentTemperature)); }
-String getAvgTemperature() { return String(round_to_2dp(avgTemperature)); }
+String getTemperature() { return String(round_to_2dp(currentTemp)); }
+String getAvgTemperature() { return String(round_to_2dp(getAverageTemperature())); }
 
 void setup(){  
-    currentTemperature = 45;
-    avgTemperature = 20;
-
-
     if(!SPIFFS.begin()){ Serial.println("An Error has occurred while mounting SPIFFS"); return; }
+
+    M5.begin(true, true, true);
+    M5.IMU.Init();
+
+    updateTemperatureData();
+    enqueueTemperatureData();
+
+    M5.dis.clear();
+    delay(10);
 
     WiFi.softAP(ssid);
     IPAddress myIP = WiFi.softAPIP();
@@ -44,26 +47,17 @@ void setup(){
     server.on("/avg_temperature", HTTP_GET, [](AsyncWebServerRequest *request){
         request->send_P(200, "text/plain", getAvgTemperature().c_str());
     });
-    server.on(“/highcharts.js”, HTTP_GET, [](AsyncWebServerRequest *request){
-        request->send(SPIFFS, “/highcharts.js”, “text/javascript”);
+    server.on("/highcharts.js", HTTP_GET, [](AsyncWebServerRequest *request){
+        request->send(SPIFFS, "/highcharts.js", "text/javascript");
     });
 
     server.begin();
 }
- 
-int counter = 0;
-bool flag = true;
 
 void loop(){
-    if (++counter >= 17) {
-        flag = !flag;
-        counter = 0;
-    }
+    updateTemperatureData();
+    enqueueTemperatureData();
 
-    if (flag) currentTemperature += counter;
-    else currentTemperature -= (16 - counter);
-
-    avgTemperature = 75 - currentTemperature;
-
-    delay(500);
+    delay(samplingDelay * 1000);
+    M5.update();
 }

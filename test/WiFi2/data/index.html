@@ -2,7 +2,7 @@
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- <script src="/highcharts.js"></script> -->
+  <script src="/highcharts.js"></script>
 
   <style>
     * { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif }
@@ -16,10 +16,10 @@
 
 <body>
   <h2>Weather Station</h2>
-    Current Temperature: <span id="currentTemp">Lorem Ipsum</span> <br><br>
+    Current Temperature: <span id="currentTemp"></span> <br><br>
     <div class="progressBar"><div id="currentTempBar" class="tempBar"></div></div>
       <br><br>
-    Average Temperature: <span id="avgTemp">Lorem Ipsum</span> <br><br>
+    Average Temperature: <span id="avgTemp"></span> <br><br>
     <div class="progressBar"><div id="avgTempBar" class="tempBar"></div></div>
 
     <div id="chart-temperature" class="container"></div>
@@ -54,8 +54,8 @@
 </script>
 
 <script>
-  var currentTemperature = 45;
-  var avgTemperature = 20;
+  var currentTemperature;
+  var avgTemperature;
 
   function setTemp(temp, tempName) {
     var elem = document.getElementById(tempName + "Bar");
@@ -64,6 +64,7 @@
     var lowerBound = Math.floor(temp / 10) * 10;
 
     temp = roundTo2dp(temp);
+    temp = clampTemp(temp);
 
     if (upperBound === lowerBound) lowerBound = upperBound - 10;
 
@@ -75,42 +76,23 @@
 
     document.getElementById(tempName).innerText = temp + "C";
   }
- 
-  var counter = 0;
-  var flag = true;
-
-  var id = setInterval(frame, 1000);
-  function frame() {
-    if (++counter >= 17) {
-        flag = !flag;
-        counter = 0;
-    }
-
-    if (flag) currentTemperature += counter/5;
-    else currentTemperature -= (16 - counter)/5;
-
-    currentTemperature = clampTemp(currentTemperature);
-    avgTemperature = 75 - currentTemperature;
-
-    setTemp(currentTemperature, "currentTemp");
-    setTemp(avgTemperature, "avgTemp");
-  }
-
-  setTemp(currentTemperature, "currentTemp");
-  setTemp(avgTemperature, "avgTemp");
 </script>
 
 <script>
-  setInterval(function ( ) {
+  var fetch_avg_temp = function() {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
         avgTemperature = parseFloat(this.responseText);
+        setTemp(avgTemperature, "avgTemp");
       }
     };
     xhttp.open("GET", "/avg_temperature", true);
     xhttp.send();
-  }, 1000 ) ;
+  };
+
+  setInterval(fetch_avg_temp , 5000 ) ;
+  fetch_avg_temp();
 
   var chartT = new Highcharts.Chart({
     chart:{ renderTo : 'chart-temperature' },
@@ -126,7 +108,7 @@
     credits: { enabled: false }
   });
 
-  setInterval(function ( ) {
+  var fetch_current_temp = function() {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
@@ -134,6 +116,7 @@
             y = parseFloat(this.responseText);
 
         currentTemperature = y;
+        setTemp(currentTemperature, "currentTemp");
 
         if(chartT.series[0].data.length > 40) {
           chartT.series[0].addPoint([x, y], true, true, true);
@@ -144,6 +127,11 @@
     };
     xhttp.open("GET", "/temperature", true);
     xhttp.send();
-  }, 1000 ) ;
+  };
+
+  setInterval(fetch_current_temp, 5000 ) ;
+  fetch_current_temp();
+
+  setInterval(function() {location.reload();} , 5000 * 15);
 </script>
 </html>
