@@ -18,6 +18,9 @@ void setup()
    M5.begin(true, true, true);
    M5.IMU.Init();
 
+   updateTemperatureData();
+   enqueueTemperatureData();
+
    M5.dis.clear();
    delay(10);
 }
