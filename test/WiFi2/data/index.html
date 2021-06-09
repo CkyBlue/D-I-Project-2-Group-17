@@ -2,7 +2,7 @@
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="/highcharts.js"></script>
+  <!-- <script src="/highcharts.js"></script> -->
 
   <style>
     * { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif }
@@ -101,6 +101,17 @@
 </script>
 
 <script>
+  setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        avgTemperature = parseFloat(this.responseText);
+      }
+    };
+    xhttp.open("GET", "/avg_temperature", true);
+    xhttp.send();
+  }, 1000 ) ;
+
   var chartT = new Highcharts.Chart({
     chart:{ renderTo : 'chart-temperature' },
     title: { text: 'Temperature' },
@@ -132,17 +143,6 @@
       }
     };
     xhttp.open("GET", "/temperature", true);
-    xhttp.send();
-  }, 1000 ) ;
-
-  setInterval(function ( ) {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-      if (this.readyState == 4 && this.status == 200) {
-        avgTemperature = parseFloat(this.responseText);
-      }
-    };
-    xhttp.open("GET", "/avg_temperature", true);
     xhttp.send();
   }, 1000 ) ;
 </script>

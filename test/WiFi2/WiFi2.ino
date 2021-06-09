@@ -28,10 +28,7 @@ void setup(){
     avgTemperature = 20;
 
 
-    if(!SPIFFS.begin()){
-        Serial.println("An Error has occurred while mounting SPIFFS");
-        return;
-    }
+    if(!SPIFFS.begin()){ Serial.println("An Error has occurred while mounting SPIFFS"); return; }
 
     WiFi.softAP(ssid);
     IPAddress myIP = WiFi.softAPIP();
