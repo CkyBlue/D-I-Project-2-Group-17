@@ -9,17 +9,19 @@
     body { min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto; }
     h2 { font-family: Impact, Haettenschweiler; font-size: 2.5rem; text-align: center; }
     .boundText { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-style: italic;}
-    #lowerBound { position: relative; left: -1pt;}
-    #upperBound { position: relative; right: -10pt;}
-    #myProgress { width: 100%; background-color: lightgrey; display: inline-block;}
-    #myBar { width: 10%; height: 30px; background-color: #04AA6D; text-align: center; line-height: 30px; color: white; transition: width .5s;}
+    .progressBar { width: 100%; background-color: lightgrey; display: inline-block;}
+    .tempBar { width: 10%; height: 20px; background-color: #04AA6D; text-align: center; line-height: 20px; color: white; transition: width .5s;}
   </style>
 </head>
 
 <body>
   <h2>Weather Station</h2>
     Current Temperature: <span id="currentTemp">Lorem Ipsum</span> <br><br>
-    <div id="myProgress"><div id="myBar"></div></div>
+    <div class="progressBar"><div id="currentTempBar" class="tempBar"></div></div>
+      <br><br>
+    Average Temperature: <span id="avgTemp">Lorem Ipsum</span> <br><br>
+    <div class="progressBar"><div id="avgTempBar" class="tempBar"></div></div>
+
     <div id="chart-temperature" class="container"></div>
 
 </body>
@@ -42,6 +44,10 @@
       return Math.round(mapScales(min_temp, max_temp, clampTemp(temp), 0, 15));
   }
 
+  function roundTo2dp(num){
+      return Math.round(num * 100) / 100;
+  }
+
   var colors = ["#5053fd", "#5474fc", "#598ffd", "#61a9fe", "#63c5ff",
       "#6ae2fe", "#7fe5d7", "#8be8b8", "#a1ec91", "#b6ed68",
       "#c3ee4d", "#d1dd3d", "#dbbd3f", "#e39b44", "#ec7946", "#f5504c"];
@@ -49,12 +55,15 @@
 
 <script>
   var currentTemperature = 45;
+  var avgTemperature = 20;
 
-  function setCurrentTemp(temp) {
-    var elem = document.getElementById("myBar");
+  function setTemp(temp, tempName) {
+    var elem = document.getElementById(tempName + "Bar");
     
     var upperBound = Math.ceil(temp / 10) * 10;
     var lowerBound = Math.floor(temp / 10) * 10;
+
+    temp = roundTo2dp(temp);
 
     if (upperBound === lowerBound) lowerBound = upperBound - 10;
 
@@ -64,9 +73,9 @@
     elem.innerText = temp + " C";
     elem.style.background = colors[tempToGradientIndex(temp)];
 
-    document.getElementById("currentTemp").innerText = temp + "C";
+    document.getElementById(tempName).innerText = temp + "C";
   }
-
+ 
   var counter = 0;
   var flag = true;
 
@@ -81,11 +90,14 @@
     else currentTemperature -= (16 - counter)/5;
 
     currentTemperature = clampTemp(currentTemperature);
+    avgTemperature = 75 - currentTemperature;
 
-    setCurrentTemp(currentTemperature);
+    setTemp(currentTemperature, "currentTemp");
+    setTemp(avgTemperature, "avgTemp");
   }
 
-  setCurrentTemp(currentTemperature);
+  setTemp(currentTemperature, "currentTemp");
+  setTemp(avgTemperature, "avgTemp");
 </script>
 
 <script>
@@ -104,23 +116,34 @@
   });
 
   setInterval(function ( ) {
-    // var xhttp = new XMLHttpRequest();
-    // xhttp.onreadystatechange = function() {
-    //   if (this.readyState == 4 && this.status == 200) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
         var x = (new Date()).getTime(),
-            // y = parseFloat(this.responseText);
-            y = currentTemperature;
+            y = parseFloat(this.responseText);
+
+        currentTemperature = y;
 
         if(chartT.series[0].data.length > 40) {
           chartT.series[0].addPoint([x, y], true, true, true);
         } else {
           chartT.series[0].addPoint([x, y], true, false, true);
         }
-    //   }
-    // };
-    // xhttp.open("GET", "/temperature", true);
-    // xhttp.send();
+      }
+    };
+    xhttp.open("GET", "/temperature", true);
+    xhttp.send();
   }, 1000 ) ;
 
+  setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        avgTemperature = parseFloat(this.responseText);
+      }
+    };
+    xhttp.open("GET", "/avg_temperature", true);
+    xhttp.send();
+  }, 1000 ) ;
 </script>
 </html>

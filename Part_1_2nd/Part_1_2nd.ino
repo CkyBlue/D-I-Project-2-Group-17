@@ -22,8 +22,6 @@ void setup()
    delay(10);
 }
 
-
-
 void loop()
 {
    bool wasStateChanged = refreshMode(); // Handles all mode transition related stuff

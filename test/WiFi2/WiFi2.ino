@@ -12,6 +12,7 @@ const char* password = "Electrolysis";
 AsyncWebServer server(80);
 
 float currentTemperature;
+float avgTemperature;
 
 float round_to_2dp(float num)
 {
@@ -20,9 +21,12 @@ float round_to_2dp(float num)
 }
 
 String getTemperature() { return String(round_to_2dp(currentTemperature)); }
+String getAvgTemperature() { return String(round_to_2dp(avgTemperature)); }
 
 void setup(){  
     currentTemperature = 45;
+    avgTemperature = 20;
+
 
     if(!SPIFFS.begin()){
         Serial.println("An Error has occurred while mounting SPIFFS");
@@ -39,6 +43,9 @@ void setup(){
     });
     server.on("/temperature", HTTP_GET, [](AsyncWebServerRequest *request){
         request->send_P(200, "text/plain", getTemperature().c_str());
+    });
+    server.on("/avg_temperature", HTTP_GET, [](AsyncWebServerRequest *request){
+        request->send_P(200, "text/plain", getAvgTemperature().c_str());
     });
     server.on(“/highcharts.js”, HTTP_GET, [](AsyncWebServerRequest *request){
         request->send(SPIFFS, “/highcharts.js”, “text/javascript”);
@@ -58,6 +65,8 @@ void loop(){
 
     if (flag) currentTemperature += counter;
     else currentTemperature -= (16 - counter);
+
+    avgTemperature = 75 - currentTemperature;
 
     delay(500);
 }
