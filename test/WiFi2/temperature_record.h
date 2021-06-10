@@ -75,6 +75,20 @@ void updateHourlyAverages(){
   Serial.print(" }\n");
 }
 
+String getHourlyAveragesStr(){
+  if (hourlyAverages[0] < -98.5 && hourlyAverages[0] > -99.5) return "[]"; 
+
+  String s = "[" + String(round_to_2dp(hourlyAverages[0]));
+  for (int i = 1; i < 24; i++) {
+    float hourlyAvg = hourlyAverages[i];
+    if (hourlyAvg < -98.5 && hourlyAvg > -99.5) // Is ~99.0
+      break;
+
+    s += ", " + String(round_to_2dp(hourlyAvg()));
+  }
+  s += "]";
+  return s;
+}
 
 
 //String hourlyAveragesStr = "";
