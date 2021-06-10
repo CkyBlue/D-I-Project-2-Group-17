@@ -5,7 +5,7 @@
 #include <SPIFFS.h>
 
 #include "M5Atom.h"
-#include "temperature_record.h"
+#include "sensor_data.h"
 #include "text_scrolling.h"
 #include "pause.h"
 

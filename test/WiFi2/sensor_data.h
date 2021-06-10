@@ -1,5 +1,10 @@
 #pragma once
 
+// #include <HDC2080.h>
+
+// #define ADDR 0x40
+// HDC2080 sensor(ADDR);
+
 #include <ArduinoQueue.h>
 #include "M5Atom.h"
 
@@ -25,9 +30,39 @@ const unsigned int samplesPerHour = 900;
 const unsigned int samplingDelay = 60 * 60 / samplesPerHour;
 
 ArduinoQueue<float> temperatures(samplesPerHour * 24);
-float currentTemp = 0;
+float currentTemp = 0, currentHumidity = 0;
 
-void updateTemperatureData() { M5.IMU.getTempData(&currentTemp); }
+void initHDCSensor(){
+    // HDC2080 Initialization
+    
+    /*
+        sensor.begin();
+        sensor.reset();
+        
+        sensor.setHighTemp(max_temp);         
+        sensor.setLowTemp(min_temp);    
+
+        sensor.setHighHumidity(70);     
+        sensor.setLowHumidity(30);      
+        
+        sensor.setMeasurementMode(TEMP_AND_HUMID);  
+        sensor.setRate(ONE_HZ);  
+        sensor.setTempRes(FOURTEEN_BIT);
+        sensor.setHumidRes(FOURTEEN_BIT);
+        
+        sensor.triggerMeasurement();
+    */
+}
+
+void updateTemperatureData() { 
+  M5.IMU.getTempData(&currentTemp);   
+  // currentTemp = sensor.readTemp();
+}
+
+void updateHumidity(){
+  // currentHumidity = sensor.readHumidity();
+}
+
 void enqueueTemperatureData() {
   while (temperatures.itemCount() >= temperatures.maxQueueSize()) {temperatures.dequeue();}
   temperatures.enqueue(currentTemp);
