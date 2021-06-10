@@ -17,9 +17,19 @@ float humidity;
 AsyncWebServer server(80);
 
 String getTemperature() { return String(round_to_2dp(currentTemp)); }
-String getAvgTemperature() { return String(round_to_2dp(getAverageTemperature())); }
-String getHourlyAverages() { updateHourlyAverages(); return hourlyAveragesStr; }
-String getHumidity() { return "20"; }
+String getAvgTemperature() { return "40.18"; }//String(round_to_2dp(getAverageTemperature())); }
+String getHourlyAverages() { return "[35.17, 42.65]"; }// updateHourlyAverages(); return hourlyAveragesStr; }
+
+bool Hflag = true;
+float hVal = 11.2;
+String getHumidity() { 
+  Hflag = !Hflag;
+  if (Hflag)
+    hVal += 2.1f;
+  else
+    hVal -= 2.1f;
+  return String(hVal); 
+  }
 
 void setup(){  
     if(!SPIFFS.begin()){ Serial.println("An Error has occurred while mounting SPIFFS"); return; }
@@ -54,13 +64,13 @@ void setup(){
     });
 
     server.on("/kelvin", HTTP_GET, [](AsyncWebServerRequest *request){
-        currentUnit = Unit::K; request->send_P(204);
+        currentUnit = Unit::K; request->send(204);
     });
     server.on("/fahrenheit", HTTP_GET, [](AsyncWebServerRequest *request){
-        currentUnit = Unit::F; request->send_P(204);
+        currentUnit = Unit::F; request->send(204);
     });
     server.on("/celsius", HTTP_GET, [](AsyncWebServerRequest *request){
-        currentUnit = Unit::C; request->send_P(204);
+        currentUnit = Unit::C; request->send(204);
     });
 
     server.on("/highcharts.js", HTTP_GET, [](AsyncWebServerRequest *request){
@@ -81,7 +91,7 @@ void loop(){
       lastSampled = millis();
    }
 
-    if (M5.wasPressed()) {
+    if (M5.Btn.wasPressed()) {
         textDisplay = !textDisplay;
 
         if (textDisplay) setText(currentTemp, humidity);

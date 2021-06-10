@@ -35,20 +35,18 @@ void enqueueTemperatureData() {
 
 // If data not enough for 24 hours, entries will be -99
 float hourlyAverages[24]= {0};
-
-String hourlyAveragesStr;
 void updateHourlyAverages(){
   ArduinoQueue<float> temp(temperatures.itemCount());
-  hourlyAveragesStr = "";
 
   float temperature;
 
   for (int i = 0; i < 24; i++) hourlyAverages[i] = 0;
 
   unsigned int hour = 0, counter = 0;
-  
+  Serial.print("[");
   while (!temperatures.isEmpty()){
     temperature = temperatures.dequeue();
+    Serial.printf(" %.2f,", temperature);
 
     // Array will store sums only at first
     hourlyAverages[hour] += temperature; 
@@ -63,25 +61,68 @@ void updateHourlyAverages(){
     
     temp.enqueue(temperature);
   } 
+  Serial.print(" ]\n");
 
   while (!temp.isEmpty()){
     temperatures.enqueue(temp.dequeue());  
   }
 
   for (int i = 0; i < hour; i++) hourlyAverages[i] /= samplesPerHour;
-
-  hourlyAveragesStr += "[";
-  for (int i = 0; i < hour - 1; i++) hourlyAveragesStr +=  String(round_to_2dp(hourlyAverages[i])) + ", ";
-  if (hour - 1 > 0) 
-    hourlyAveragesStr +=  String(round_to_2dp(hourlyAverages[hour - 1]));
-  hourlyAveragesStr += "]";
-
   for (int i = hour; i < 24; i++) hourlyAverages[i] = -99;
 
   Serial.print("{");
   for (int i = 0; i < 24; i++) Serial.printf(" %.2f,", hourlyAverages[i]);
   Serial.print(" }\n");
 }
+
+
+
+//String hourlyAveragesStr = "";
+//void updateHourlyAverages(){
+//  ArduinoQueue<float> temp(temperatures.itemCount());
+//  hourlyAveragesStr = "";
+//
+//  float temperature;
+//
+//  for (int i = 0; i < 24; i++) hourlyAverages[i] = 0;
+//
+//  unsigned int hour = 0, counter = 0;
+//  
+//  while (!temperatures.isEmpty()){
+//    temperature = temperatures.dequeue();
+//
+//    // Array will store sums only at first
+//    hourlyAverages[hour] += temperature; 
+//
+//    counter++;
+//    if (counter >= samplesPerHour) { 
+//      counter = 0; 
+//      hour++; 
+//
+//      if (hour >= 24) break;
+//    }
+//    
+//    temp.enqueue(temperature);
+//  } 
+//
+//  while (!temp.isEmpty()){
+//    temperatures.enqueue(temp.dequeue());  
+//  }
+//
+//  for (int i = 0; i < hour; i++) hourlyAverages[i] /= samplesPerHour;
+//
+//  hourlyAveragesStr += "[";
+//  for (int i = 0; i < hour - 1; i++) hourlyAveragesStr +=  String(round_to_2dp(hourlyAverages[i]))+ ", ";
+//  if (hour - 1 > 0) 
+//    hourlyAveragesStr +=  String(round_to_2dp(hourlyAverages[hour - 1]));
+//  hourlyAveragesStr += "]";
+//
+//  for (int i = hour; i < 24; i++) hourlyAverages[i] = -99;
+//
+//  Serial.print("{");
+//  for (int i = 0; i < 24; i++) Serial.printf(" %.2f,", hourlyAverages[i]);
+//  Serial.print(" }\n");
+//}
 
 float getAverageTemperature(){
   updateHourlyAverages();

@@ -4,12 +4,6 @@
 #include "pause.h"
 #include "temperature_units.h"
 
-float round_to_2dp(float num)
-{
-    int t = num * 100;
-    return t / 100.0f;
-}
-
 CustomText tx;
 
 String outputString = "";
@@ -22,7 +16,7 @@ int textBlinkDelay = 400;
 void setText(float temp_in_cel, float humidity)
 {
     // TODO Add Humidity
-    outputString = getoutputString(temp_in_cel) + " " + String(humidity) + "gm^";
+    outputString = getTempString(temp_in_cel) + " " + String(humidity) + "gm^";
     textCursor = 0;
     textBlinkFlag = false;
 }

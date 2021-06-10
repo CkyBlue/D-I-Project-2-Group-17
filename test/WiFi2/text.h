@@ -24,7 +24,7 @@ class CustomText{
   int8_t px_minus[4] = {11, 12, 13, -1};
   int8_t px_g[10] = {2, 6, 8, 12, 13, 15, 18, 21, 22, -1};
   int8_t px_m[12] = {6, 8, 10, 12, 14, 15, 17, 19, 20, 22, 24, -1};
-  int8_t px_neg_cube[13] = {2, 3, 4, 9, 10, 11, 13, 14, 19, 22, 23, 24. -1};
+  int8_t px_neg_cube[13] = {2, 3, 4, 9, 10, 11, 13, 14, 19, 22, 23, 24, -1};
   
   public:
   void print(char c, unsigned int color){

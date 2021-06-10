@@ -122,8 +122,8 @@
   function setHumidity(humidity) {
     var elem = document.getElementById("humidityBar");
     
-    var upperBound = Math.ceil(temp / 10) * 10;
-    var lowerBound = Math.floor(temp / 10) * 10;
+    var upperBound = Math.ceil(humidity / 10) * 10;
+    var lowerBound = Math.floor(humidity / 10) * 10;
 
     humidity = roundTo2dp(humidity);
 
@@ -265,7 +265,6 @@
 
   setInterval(fetch_humidity, 5000 ) ;
   fetch_humidity();
-  // setInterval(function() {location.reload();} , 5000 * 15);
 </script>
 
 <script>
