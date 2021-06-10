@@ -3,6 +3,7 @@
 #include "text.h"
 #include "pause.h"
 #include "sensor_data.h"
+#include "temperature_units.h"
 
 CustomText tx;
 
@@ -16,7 +17,7 @@ int textBlinkDelay = 400;
 void setText(float temp_in_cel, float humidity)
 {
     // TODO Add Humidity
-    outputString = getTempString(temp_in_cel) + " " + String(humidity) + "gm^";
+    outputString = getTempString(temp_in_cel) + " " + String(humidity) + "%";
     textCursor = 0;
     textBlinkFlag = false;
 }

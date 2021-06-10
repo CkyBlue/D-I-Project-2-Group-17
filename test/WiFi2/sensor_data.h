@@ -111,7 +111,7 @@ void updateHourlyAverages(){
 }
 
 String getHourlyAveragesStr(){
-  if (hourlyAverages[0] < -98.5 && hourlyAverages[0] > -99.5) return "[]"; 
+  if (hourlyAverages[0] < -98.5 && hourlyAverages[0] > -99.5) return "[" + String(currentTemp) + "]"; 
 
   String s = "[" + String(round_to_2dp(hourlyAverages[0]));
   for (int i = 1; i < 24; i++) {
@@ -119,59 +119,13 @@ String getHourlyAveragesStr(){
     if (hourlyAvg < -98.5 && hourlyAvg > -99.5) // Is ~99.0
       break;
 
-    s += ", " + String(round_to_2dp(hourlyAvg()));
+    s += ", " + String(round_to_2dp(hourlyAvg));
   }
   s += "]";
+
+  Serial.print(s + "\n");
   return s;
 }
-
-
-//String hourlyAveragesStr = "";
-//void updateHourlyAverages(){
-//  ArduinoQueue<float> temp(temperatures.itemCount());
-//  hourlyAveragesStr = "";
-//
-//  float temperature;
-//
-//  for (int i = 0; i < 24; i++) hourlyAverages[i] = 0;
-//
-//  unsigned int hour = 0, counter = 0;
-//  
-//  while (!temperatures.isEmpty()){
-//    temperature = temperatures.dequeue();
-//
-//    // Array will store sums only at first
-//    hourlyAverages[hour] += temperature; 
-//
-//    counter++;
-//    if (counter >= samplesPerHour) { 
-//      counter = 0; 
-//      hour++; 
-//
-//      if (hour >= 24) break;
-//    }
-//    
-//    temp.enqueue(temperature);
-//  } 
-//
-//  while (!temp.isEmpty()){
-//    temperatures.enqueue(temp.dequeue());  
-//  }
-//
-//  for (int i = 0; i < hour; i++) hourlyAverages[i] /= samplesPerHour;
-//
-//  hourlyAveragesStr += "[";
-//  for (int i = 0; i < hour - 1; i++) hourlyAveragesStr +=  String(round_to_2dp(hourlyAverages[i]))+ ", ";
-//  if (hour - 1 > 0) 
-//    hourlyAveragesStr +=  String(round_to_2dp(hourlyAverages[hour - 1]));
-//  hourlyAveragesStr += "]";
-//
-//  for (int i = hour; i < 24; i++) hourlyAverages[i] = -99;
-//
-//  Serial.print("{");
-//  for (int i = 0; i < 24; i++) Serial.printf(" %.2f,", hourlyAverages[i]);
-//  Serial.print(" }\n");
-//}
 
 float getAverageTemperature(){
   updateHourlyAverages();

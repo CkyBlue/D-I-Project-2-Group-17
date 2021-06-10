@@ -12,13 +12,11 @@
 const char* ssid = "CkyBlue";
 const char* password = "Electrolysis";
 
-float humidity;
-
 AsyncWebServer server(80);
 
 String getTemperature() { return String(round_to_2dp(currentTemp)); }
-String getAvgTemperature() { return "40.18"; }//String(round_to_2dp(getAverageTemperature())); }
-String getHourlyAverages() { return "[35.17, 42.65]"; }// updateHourlyAverages(); return hourlyAveragesStr; }
+String getAvgTemperature() { return String(round_to_2dp(getAverageTemperature())); }
+String getHourlyAverages() { updateHourlyAverages(); return getHourlyAveragesStr(); }
 
 bool Hflag = true;
 float hVal = 11.2;
@@ -39,8 +37,6 @@ void setup(){
 
     updateTemperatureData();
     enqueueTemperatureData();
-
-    humidity = 20;
 
     M5.dis.clear();
     delay(10);
@@ -94,7 +90,8 @@ void loop(){
     if (M5.Btn.wasPressed()) {
         textDisplay = !textDisplay;
 
-        if (textDisplay) setText(currentTemp, humidity);
+        // TODO- Switch to currentHumidity
+        if (textDisplay) setText(currentTemp, hVal);
     }
 
     if (isPaused()) return;

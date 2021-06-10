@@ -7,7 +7,10 @@
   <style>
     * { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;  box-sizing: border-box }
     body { min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto; }
-    h2 { font-family: Impact, Haettenschweiler; font-size: 2.5rem; text-align: center; }
+    h2 { 
+      /* font-family: Impact, Haettenschweiler;  */
+      font-size: 2.5rem; text-align: center; 
+    }
     .boundText { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-style: italic;}
     .progressBar { width: 100%; background-color: lightgrey; display: inline-block;}
     .tempBar { width: 10%; height: 20px; background-color: #04AA6D; text-align: center; line-height: 20px; color: white; transition: width .5s;}
@@ -132,9 +135,9 @@
     var width = mapScales(lowerBound, upperBound, humidity, 1, 100);
 
     elem.style.width = width + "%";
-    elem.innerText = humidity + " g/m^3";
+    elem.innerText = humidity + " %";
 
-    document.getElementById("humidity").innerText = humidity + " g/m^3";
+    document.getElementById("humidity").innerText = humidity + " %";
   }
 </script>
 
