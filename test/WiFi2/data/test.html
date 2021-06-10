@@ -1,0 +1,49 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        .btn-group button { background-color: gray; border: 1px solid darkgray; color: white;
+        padding: 10px 24px; cursor: pointer; float: left;}
+        .btn-group button:not(:last-child) { border-right: none; }
+        .btn-group:after { content: ""; clear: both; display: table; }
+        .btn-group button:hover { background-color: #555555; }
+        .btn-group button.active { background-color: #222222; }
+    </style>
+
+</head>
+<body>
+    <div class="btn-group">
+        <button class="btn" onclick="selectUnit(event, 'celsius')" id="celsiusBtn">Celsius</button>
+        <button class="btn" onclick="selectUnit(event, 'fahrenheit')" id="fahrenheitBtn">Fahrenheit</button>
+        <button class="btn" onclick="selectUnit(event, 'kelvin')" id="kelvinBtn">Kelvin</button>
+      </div>
+</body>
+
+<script>
+  function selectUnit(evt, unit) {
+      var i, btn;
+
+      btn = document.getElementsByClassName("btn");
+      for (i = 0; i < btn.length; i++) {
+          btn[i].className = btn[i].className.replace(" active", "");
+      }
+
+      evt.currentTarget.className += " active";
+
+      fetch('/' + unit).then(function (response) {
+            console.log('Success!', response);
+        }).catch(function (err) {
+            console.warn('Something went wrong.', err);
+        });
+  }
+
+  window.onload = function (e) {
+      document.getElementById("celsiusBtn").click();
+  }
+</script>
+
+</html>

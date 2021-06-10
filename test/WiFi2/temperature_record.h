@@ -13,6 +13,12 @@ float clampTemp(float temp){
   return temp;
 }
 
+float round_to_2dp(float num)
+{
+    int t = num * 100;
+    return t / 100.0f;
+}
+
 const unsigned int samplesPerHour = 900;
 
 // In Seconds
@@ -29,18 +35,20 @@ void enqueueTemperatureData() {
 
 // If data not enough for 24 hours, entries will be -99
 float hourlyAverages[24]= {0};
+
+String hourlyAveragesStr;
 void updateHourlyAverages(){
   ArduinoQueue<float> temp(temperatures.itemCount());
+  hourlyAveragesStr = "";
 
   float temperature;
 
   for (int i = 0; i < 24; i++) hourlyAverages[i] = 0;
 
   unsigned int hour = 0, counter = 0;
-  Serial.print("[");
+  
   while (!temperatures.isEmpty()){
     temperature = temperatures.dequeue();
-    Serial.printf(" %.2f,", temperature);
 
     // Array will store sums only at first
     hourlyAverages[hour] += temperature; 
@@ -55,13 +63,18 @@ void updateHourlyAverages(){
     
     temp.enqueue(temperature);
   } 
-  Serial.print(" ]\n");
 
   while (!temp.isEmpty()){
     temperatures.enqueue(temp.dequeue());  
   }
 
   for (int i = 0; i < hour; i++) hourlyAverages[i] /= samplesPerHour;
+
+  hourlyAveragesStr += "[";
+  for (int i = 0; i < hour - 1; i++) hourlyAveragesStr +=  String(round_to_2dp(hourlyAverages[i])) + ", ";
+  hourlyAveragesStr +=  String(round_to_2dp(hourlyAverages[hour - 1]));
+  hourlyAveragesStr += "]";
+
   for (int i = hour; i < 24; i++) hourlyAverages[i] = -99;
 
   Serial.print("{");

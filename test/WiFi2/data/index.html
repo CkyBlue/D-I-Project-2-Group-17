@@ -5,25 +5,66 @@
   <script src="/highcharts.js"></script>
 
   <style>
-    * { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif }
+    * { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;  box-sizing: border-box }
     body { min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto; }
     h2 { font-family: Impact, Haettenschweiler; font-size: 2.5rem; text-align: center; }
     .boundText { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-style: italic;}
     .progressBar { width: 100%; background-color: lightgrey; display: inline-block;}
     .tempBar { width: 10%; height: 20px; background-color: #04AA6D; text-align: center; line-height: 20px; color: white; transition: width .5s;}
+    .canvas { width: 80%; height: 70%; }
+    .tab { float: left; border: 1px solid #ccc; background-color: #f1f1f1; width: 30%; }
+    .tab button { display: block; background-color: inherit; color: black; padding: 22px 16px;
+      width: 100%; border: none; outline: none; text-align: left; cursor: pointer; transition: 0.3s; font-size: 17px; }
+    .tab button:hover { background-color: #ddd; }
+    .tab button.active { background-color: #ccc; }
+    .tabcontent { float: left; padding: 12px 12px; border: 1px solid #ccc; width: 70%; border-left: none; height: 300px; }
+    .btn-group button { background-color: gray; border: 1px solid darkgray; color: white; transition: background-color .25s;
+      padding: 10px 24px; cursor: pointer;   width: 50%; display: block; }
+    .btn-group button:not(:last-child) { border-bottom: none; }
+    .btn-group:after { content: ""; clear: both; display: table; }
+    .btn-group button:hover { background-color: #555555; }
+    .btn-group button.active { background-color: #333333; }
   </style>
 </head>
 
 <body>
   <h2>Weather Station</h2>
-    Current Temperature: <span id="currentTemp"></span> <br><br>
-    <div class="progressBar"><div id="currentTempBar" class="tempBar"></div></div>
+
+  <div class="tab">
+    <button class="tablinks" onclick="openMode(event, 'currentTempTab')" id="defaultOpen">Current Temperature</button>
+    <button class="tablinks" onclick="openMode(event, 'avgTempTab')">Average Temperature</button>
+    <button class="tablinks" onclick="openMode(event, 'humidityTab')">Humidity</button>
+    <button class="tablinks" onclick="openMode(event, 'unitsTab')">Configure M5 Units</button>
+  </div>
+ 
+    <div id="currentTempTab" class="tabcontent">
+      Current Temperature: <span id="currentTemp"></span> <br><br>
+      <div class="progressBar"><div id="currentTempBar" class="tempBar"></div></div>
       <br><br>
-    Average Temperature: <span id="avgTemp"></span> <br><br>
-    <div class="progressBar"><div id="avgTempBar" class="tempBar"></div></div>
+      <div id="chart-temperature" class="container"></div>
+    </div>
 
-    <div id="chart-temperature" class="container"></div>
+    <div id="avgTempTab" class="tabcontent">
+      Hourly Average Temperature: <span id="avgTemp"></span> <br><br>
+      <div class="progressBar"><div id="avgTempBar" class="tempBar"></div></div>
+      <br><br>
+      <div id="chart-temperature-avg" class="container"></div>
+    </div>
 
+    <div id="humidityTab" class="tabcontent">
+      Current Humidity: <span id="humidity"></span> <br><br>
+      <div class="progressBar"><div id="humidityBar" class="tempBar" style="background-color: #B7E9F7;"></div></div>
+      <br><br>
+      <div id="chart-humidity" class="container"></div>
+    </div>
+
+    <div id="unitsTab" class="tabcontent">
+      <div class="btn-group">
+        <button class="btn" onclick="selectUnit(event, 'celsius')" id="celsiusBtn">Celsius</button>
+        <button class="btn" onclick="selectUnit(event, 'fahrenheit')" id="fahrenheitBtn">Fahrenheit</button>
+        <button class="btn" onclick="selectUnit(event, 'kelvin')" id="kelvinBtn">Kelvin</button>
+      </div>
+    </div>
 </body>
 
 <script>
@@ -56,6 +97,7 @@
 <script>
   var currentTemperature;
   var avgTemperature;
+  var currentHumidity;
 
   function setTemp(temp, tempName) {
     var elem = document.getElementById(tempName + "Bar");
@@ -76,24 +118,27 @@
 
     document.getElementById(tempName).innerText = temp + "C";
   }
+
+  function setHumidity(humidity) {
+    var elem = document.getElementById("humidityBar");
+    
+    var upperBound = Math.ceil(temp / 10) * 10;
+    var lowerBound = Math.floor(temp / 10) * 10;
+
+    humidity = roundTo2dp(humidity);
+
+    if (upperBound === lowerBound) lowerBound = upperBound - 10;
+
+    var width = mapScales(lowerBound, upperBound, humidity, 1, 100);
+
+    elem.style.width = width + "%";
+    elem.innerText = humidity + " g/m^3";
+
+    document.getElementById("humidity").innerText = humidity + " g/m^3";
+  }
 </script>
 
 <script>
-  var fetch_avg_temp = function() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-      if (this.readyState == 4 && this.status == 200) {
-        avgTemperature = parseFloat(this.responseText);
-        setTemp(avgTemperature, "avgTemp");
-      }
-    };
-    xhttp.open("GET", "/avg_temperature", true);
-    xhttp.send();
-  };
-
-  setInterval(fetch_avg_temp , 5000 ) ;
-  fetch_avg_temp();
-
   var chartT = new Highcharts.Chart({
     chart:{ renderTo : 'chart-temperature' },
     title: { text: 'Temperature' },
@@ -108,6 +153,71 @@
     credits: { enabled: false }
   });
 
+  var chartT_Avg = new Highcharts.Chart({
+    chart:{ renderTo : 'chart-temperature-avg' },
+    title: { text: 'Hourly Average Temperature' },
+    series: [{ showInLegend: false, data: [] }],
+    plotOptions: { line: { animation: false, dataLabels: { enabled: true } },
+      series: { color: '#059e8a' } },
+    xAxis: { type: 'datetime', dateTimeLabelFormats: { second: '%H:%M:%S' }
+    },
+    yAxis: {
+      title: { text: 'Temperature (Celsius)' }
+    },
+    credits: { enabled: false }
+  });
+
+  var chartH = new Highcharts.Chart({
+    chart:{ renderTo : 'chart-humidity' },
+    title: { text: 'Humidity' },
+    series: [{ showInLegend: false, data: [] }],
+    plotOptions: { line: { animation: false, dataLabels: { enabled: true } },
+      series: { color: '#059e8a' } },
+    xAxis: { type: 'datetime', dateTimeLabelFormats: { second: '%H:%M:%S' }
+    },
+    yAxis: {
+      title: { text: 'Humidity (g/m^3)' }
+    },
+    credits: { enabled: false }
+  });
+
+  // chartT.series[0].addPoint([(new Date()).getTime(), 12.0], true, false, true);
+  // chartT.series[0].addPoint([(new Date()).getTime(), 13], true, false, true);
+</script>
+
+<script>
+  var fetch_avg_temp = function() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        st = this.responseText;
+
+        var res = st.split(":");
+        var arr = JSON.parse(res[0]);
+        var avgTemperature = parseFloat(res[1]);
+
+        console.log(this.responseText, arr, avgTemperature);
+
+        setTemp(avgTemperature, "avgTemp");
+
+        for (var i = 0; i < arr.length; i++) { 
+          var y = arr[i]; 
+          var x = (new Date()).getTime() - ( (arr.length - i - 1) *60*60*1000);
+
+          if(chartT_Avg.series[0].data.length > 12) {
+          chartT_Avg.series[0].addPoint([x, y], true, true, true);
+          } else {
+          chartT_Avg.series[0].addPoint([x, y], true, false, true);
+          }
+        }        
+      };
+    }
+    xhttp.open("GET", "/avg_temperature", true);
+    xhttp.send();
+  };
+
+  fetch_avg_temp();
+
   var fetch_current_temp = function() {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -118,7 +228,7 @@
         currentTemperature = y;
         setTemp(currentTemperature, "currentTemp");
 
-        if(chartT.series[0].data.length > 40) {
+        if(chartT.series[0].data.length > 12) {
           chartT.series[0].addPoint([x, y], true, true, true);
         } else {
           chartT.series[0].addPoint([x, y], true, false, true);
@@ -132,6 +242,69 @@
   setInterval(fetch_current_temp, 5000 ) ;
   fetch_current_temp();
 
-  setInterval(function() {location.reload();} , 5000 * 15);
+  var fetch_humidity = function() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        var x = (new Date()).getTime(),
+            y = parseFloat(this.responseText);
+
+        currentHumidity = y;
+        setHumidity(currentHumidity);
+
+        if(chartH.series[0].data.length > 12) {
+          chartH.series[0].addPoint([x, y], true, true, true);
+        } else {
+          chartH.series[0].addPoint([x, y], true, false, true);
+        }
+      }
+    };
+    xhttp.open("GET", "/humidity", true);
+    xhttp.send();
+  };
+
+  setInterval(fetch_humidity, 5000 ) ;
+  fetch_humidity();
+  // setInterval(function() {location.reload();} , 5000 * 15);
+</script>
+
+<script>
+  function openMode(evt, tabName) {
+      var i, tabcontent, tablinks;
+
+      tabcontent = document.getElementsByClassName("tabcontent");
+      for (i = 0; i < tabcontent.length; i++) {
+          tabcontent[i].style.display = "none";
+      }
+
+      tablinks = document.getElementsByClassName("tablinks");
+      for (i = 0; i < tablinks.length; i++) {
+          tablinks[i].className = tablinks[i].className.replace(" active", "");
+      }
+
+      document.getElementById(tabName).style.display = "block";
+      evt.currentTarget.className += " active";
+  }
+
+  function selectUnit(evt, unit) {
+      var i, btn;
+
+      btn = document.getElementsByClassName("btn");
+      for (i = 0; i < btn.length; i++) {
+          btn[i].className = btn[i].className.replace(" active", "");
+      }
+
+      evt.currentTarget.className += " active";
+
+      fetch('/' + unit).then(function (response) {
+            console.log('Success!', response);
+        }).catch(function (err) {
+            console.warn('Something went wrong.', err);
+        });
+  }
+
+  window.onload = function (e) {
+      document.getElementById("defaultOpen").click();
+  }
 </script>
 </html>
