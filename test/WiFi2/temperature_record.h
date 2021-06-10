@@ -72,7 +72,8 @@ void updateHourlyAverages(){
 
   hourlyAveragesStr += "[";
   for (int i = 0; i < hour - 1; i++) hourlyAveragesStr +=  String(round_to_2dp(hourlyAverages[i])) + ", ";
-  hourlyAveragesStr +=  String(round_to_2dp(hourlyAverages[hour - 1]));
+  if (hour - 1 > 0) 
+    hourlyAveragesStr +=  String(round_to_2dp(hourlyAverages[hour - 1]));
   hourlyAveragesStr += "]";
 
   for (int i = hour; i < 24; i++) hourlyAverages[i] = -99;
