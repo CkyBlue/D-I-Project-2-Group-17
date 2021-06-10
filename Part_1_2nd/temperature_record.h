@@ -1,5 +1,9 @@
 #pragma once
 
+/* 
+  Reads, stores and analyzes temperature data 
+*/
+
 #include <ArduinoQueue.h>
 #include "M5Atom.h"
 #include "scaling.h"
@@ -14,12 +18,14 @@ float clampTemp(float temp){
   return temp;
 }
 
+// Sampling parameters
 const unsigned int samplesPerHour = 4;
+const unsigned int samplingDelay = 60 * 60 / samplesPerHour; // In Seconds
 
-// In Seconds
-const unsigned int samplingDelay = 60 * 60 / samplesPerHour;
-
+// Queue of 24 hours of data
 ArduinoQueue<float> temperatures(samplesPerHour * 24);
+
+// Global current temperature parameter
 float currentTemp = 0;
 
 void updateTemperatureData() { M5.IMU.getTempData(&currentTemp); }
@@ -28,7 +34,8 @@ void enqueueTemperatureData() {
   temperatures.enqueue(currentTemp);
 }
 
-// If data not enough for 24 hours, entries will be -99
+// Analyzes 24 hours worth of data to determine average temperature of each hour
+// If data not enough for 24 hours, entries will be at rouge value of -99
 float hourlyAverages[24]= {0};
 void updateHourlyAverages(){
   ArduinoQueue<float> temp(temperatures.itemCount());
@@ -62,14 +69,16 @@ void updateHourlyAverages(){
     temperatures.enqueue(temp.dequeue());  
   }
 
+  // Calculating averages
   for (int i = 0; i < hour; i++) hourlyAverages[i] /= samplesPerHour;
-  for (int i = hour; i < 24; i++) hourlyAverages[i] = -99;
+  for (int i = hour; i < 24; i++) hourlyAverages[i] = -99; // Rouge values
 
   Serial.print("{");
   for (int i = 0; i < 24; i++) Serial.printf(" %.2f,", hourlyAverages[i]);
   Serial.print(" }\n");
 }
 
+// Average of the averages
 float getAverageTemperature(){
   updateHourlyAverages();
 
@@ -83,7 +92,8 @@ float getAverageTemperature(){
     sum += hourlyAvg;
   }
 
-  if (sum == 0) return currentTemp;
+  // If less than an hour has passed, the current temperature will be used as the average temperature
+  if (sum == 0) return currentTemp; 
 
   return sum/hr;
 }

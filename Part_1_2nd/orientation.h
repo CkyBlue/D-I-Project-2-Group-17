@@ -1,6 +1,10 @@
 #pragma once
 #include "M5Atom.h"
 
+/* 
+   Handles interpreting orientation from pitch/roll/yaw values
+*/
+
 enum Dir { UP = 0, LEFT = 1, RIGHT = 2, BACK = 3, FRONT = 4, DOWN = 5 };
 
 int constraint = 20; // Allowance in detecting angles

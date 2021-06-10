@@ -1,5 +1,9 @@
 #pragma once
 
+/* 
+    Colors used by the gradient
+*/
+
 // Size = 16
 unsigned int gradient[] = {
 0x5350fd, 0x7454fc, 0x8f59fd, 0xa961fe, 0xc563ff,

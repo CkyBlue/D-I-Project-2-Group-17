@@ -1,86 +1,101 @@
-#include "modes.h"
-#include "pause.h"
-#include "scaling.h"
-#include "htmlhandler.h"
-#include "text.h"
-#include "graph_scrolling.h"
-#include "text_scrolling.h"
-#include "gradient_blink.h"
-#include "temperature_record.h"
-#include "temperature_units.h"
+#include <WiFi.h>
+#include <WiFiAP.h>
+
+#include <ESPAsyncWebServer.h>
+#include <SPIFFS.h>
 
 #include "M5Atom.h"
+#include "sensor_data.h"
+#include "text_scrolling.h"
+#include "pause.h"
 
-bool standByFlag = true;
+const char* ssid = "CkyBlue";
+const char* password = "Electrolysis";
 
-void setup()
-{
-   M5.begin(true, true, true);
-   M5.IMU.Init();
-   initialize();
-   M5.dis.clear();
-   delay(10);
+AsyncWebServer server(80);
+
+String getTemperature() { return String(round_to_2dp(currentTemp)); }
+String getAvgTemperature() { return String(round_to_2dp(getAverageTemperature())); }
+String getHourlyAverages() { updateHourlyAverages(); return getHourlyAveragesStr(); }
+
+bool Hflag = true;
+float hVal = 11.2;
+String getHumidity() { 
+  Hflag = !Hflag;
+  if (Hflag)
+    hVal += 2.1f;
+  else
+    hVal -= 2.1f;
+  return String(hVal); 
+  }
+
+void setup(){  
+    if(!SPIFFS.begin()){ Serial.println("An Error has occurred while mounting SPIFFS"); return; }
+
+    M5.begin(true, true, true);
+    M5.IMU.Init();
+
+    updateTemperatureData();
+    enqueueTemperatureData();
+
+    M5.dis.clear();
+    delay(10);
+
+    WiFi.softAP(ssid);
+    IPAddress myIP = WiFi.softAPIP();
+    Serial.print("AP IP address: ");
+    Serial.println(myIP);
+
+    server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+        request->send(SPIFFS, "/index.html");
+    });
+    server.on("/temperature", HTTP_GET, [](AsyncWebServerRequest *request){
+        request->send_P(200, "text/plain", getTemperature().c_str());
+    });
+    server.on("/avg_temperature", HTTP_GET, [](AsyncWebServerRequest *request){
+        request->send_P(200, "text/plain", (getHourlyAverages() + ":" + getAverageTemperature()).c_str());
+    });
+    server.on("/humidity", HTTP_GET, [](AsyncWebServerRequest *request){
+        request->send_P(200, "text/plain", getHumidity().c_str());
+    });
+
+    server.on("/kelvin", HTTP_GET, [](AsyncWebServerRequest *request){
+        currentUnit = Unit::K; request->send(204);
+    });
+    server.on("/fahrenheit", HTTP_GET, [](AsyncWebServerRequest *request){
+        currentUnit = Unit::F; request->send(204);
+    });
+    server.on("/celsius", HTTP_GET, [](AsyncWebServerRequest *request){
+        currentUnit = Unit::C; request->send(204);
+    });
+
+    server.on("/highcharts.js", HTTP_GET, [](AsyncWebServerRequest *request){
+        request->send(SPIFFS, "/highcharts.js", "text/javascript");
+    });
+
+    server.begin();
 }
 
-void loop()
-{
-   bool wasStateChanged = refreshMode(); // Handles all mode transition related stuff
+unsigned int long lastSampled = 0;
+bool textDisplay = false;
 
-   if (wasStateChanged){
-      resetPause();
-
-      if (state != -1){
-         Serial.print("\nMode - " + modesText[state] + "\n");
-         standByFlag = true;
-      }
-
-      switch (state)
-      {
-      case Mode_I: { setTempText(currentTemp); break; }
-      case Mode_II: { setTempText(getAverageTemperature()); break; }
-      case MODE_III: { currentTempColorPos = mapCircular(tempToGradientIndex(currentTemp)); break; }
-      case MODE_IV: { graphXCursor = 0; updateHourlyAverages(); break; } // Temperature Graph
-      case MODE_V: { break; }
-      case -1: { M5.dis.clear(); break;} // Off
-
-      default:
-         break;
-      }
-   }
-
-   if (isPaused()) return; // Pause Interception
-
-   if (!activeDisplay)
-   { // Background Reading mode
+void loop(){
+    if ((millis() - lastSampled) > (samplingDelay * 1000)) {
       updateTemperatureData();
       enqueueTemperatureData();
 
-      pause(samplingDelay * 1000);
-      M5.update();
-      return;
+      lastSampled = millis();
    }
-   else
-   {
-      M5.dis.clear();
 
-      if (standByFlag){
-         if (M5.Btn.wasPressed()) {
-            standByFlag = false;
-            return;
-         }
+    if (M5.Btn.wasPressed()) {
+        textDisplay = !textDisplay;
 
-         M5.dis.drawpix(toGrid(state, 2), 0xffffff);
-         return;
-      }
+        // TODO- Switch to currentHumidity
+        if (textDisplay) setText(currentTemp, hVal);
+    }
 
-      switch (state)
-      {
-      case Mode_I: { scrollTempText(); return; }
-      case Mode_II: { scrollTempText(); return; }
-      case MODE_III: { blinkGradient(); return; }
-      case MODE_IV: { scrollGraph(); return; }
-      case MODE_V: { showUnit(); if (M5.Btn.wasPressed()) incUnit(); return; }
-      default: break;
-      }
-   }
+    if (isPaused()) return;
+
+    M5.dis.clear();
+    if (textDisplay) { textDisplay = scrollText(); }    
 }

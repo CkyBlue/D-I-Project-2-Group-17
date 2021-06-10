@@ -1,5 +1,9 @@
 #pragma once
 
+/* 
+    Manages text scrolling. Keeps track of text cursor, wrap around and scroll/wrap-around delays
+*/
+
 #include "text.h"
 #include "pause.h"
 #include "temperature_units.h"
@@ -19,6 +23,7 @@ unsigned int textColor = 0xffffff; // White
 bool textBlinkFlag = false;
 int textBlinkDelay = 400;
 
+// Initializes scrolling parameters. Run at mode transition
 void setTempText(float temp_in_cel)
 {
     tempString = getTempString(temp_in_cel);
@@ -27,6 +32,7 @@ void setTempText(float temp_in_cel)
     textColor = tempToColor(temp_in_cel);
 }
 
+// Called repeatedly from loop() over text-scroll duration
 void scrollTempText()
 {
     textBlinkFlag = !textBlinkFlag;
@@ -53,6 +59,7 @@ void scrollTempText()
     return; 
 }
 
+// Shows active unit
 void showUnit(){
     tx.print(unitChar[currentUnit], 0xffffff);
 }

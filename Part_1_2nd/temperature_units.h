@@ -1,5 +1,9 @@
 #pragma once
 
+/* 
+    Handles Temperature Unit maths and transition
+*/
+
 enum Unit {C = 0, K = 1, F = 2};
 char unitChar[3] = {'C', 'K', 'F'};
 

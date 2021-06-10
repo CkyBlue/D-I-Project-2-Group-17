@@ -2,47 +2,42 @@
 
 #include "text.h"
 #include "pause.h"
+#include "sensor_data.h"
 #include "temperature_units.h"
-
-float round_to_2dp(float num)
-{
-    int t = num * 100;
-    return t / 100.0f;
-}
 
 CustomText tx;
 
-String tempString = "";
+String outputString = "";
 int textCursor = 0;
 int textScrollDelay = 500;         // milliseconds
 unsigned int textColor = 0xffffff; // White
 bool textBlinkFlag = false;
 int textBlinkDelay = 400;
 
-void setTempText(float temp_in_cel)
+void setText(float temp_in_cel, float humidity)
 {
-    tempString = getTempString(temp_in_cel);
+    // TODO Add Humidity
+    outputString = getTempString(temp_in_cel) + " " + String(humidity) + "%";
     textCursor = 0;
     textBlinkFlag = false;
-    textColor = tempToColor(temp_in_cel);
 }
 
-void scrollTempText()
+bool scrollText()
 {
     textBlinkFlag = !textBlinkFlag;
 
-    if (tempString.length() == 0) { pause(textScrollDelay); return; }
+    if (outputString.length() == 0) { pause(textScrollDelay); return true; }
 
-    if (!textBlinkFlag) { pause(textBlinkDelay); return; }
+    if (!textBlinkFlag) { pause(textBlinkDelay); return true; }
 
-    if (textCursor >= tempString.length())
-    { // Blank at wrap-around
-        textCursor = -1;
+    if (textCursor >= outputString.length())
+    { 
+        return false;
         Serial.print("\n");
     }
     else
     {
-        char c = tempString.charAt(textCursor);
+        char c = outputString.charAt(textCursor);
         tx.print(c, textColor);
         Serial.print(String(c));
     }
@@ -50,7 +45,7 @@ void scrollTempText()
     textCursor++;
     
     pause(textScrollDelay); 
-    return; 
+    return true; 
 }
 
 void showUnit(){

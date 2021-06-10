@@ -1,5 +1,9 @@
 #pragma once
 
+/* 
+  Handles drawing the gradient and bar-graphs on the M5
+*/
+
 #include "M5Atom.h"
 #include "colors.h"
 #include "grid.h"

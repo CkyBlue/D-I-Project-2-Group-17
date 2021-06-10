@@ -1,6 +1,10 @@
 #pragma once
 #include "M5Atom.h"
 
+/* 
+  A custom text-printing library created to work around bugs introduced when working with NeoMatrix text
+*/
+
 // '*'s are intepreted as degrees symbol
 class CustomText{
   private:

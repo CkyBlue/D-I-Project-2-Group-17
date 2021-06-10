@@ -1,5 +1,9 @@
 #pragma once
 
+/* 
+    Handles graph scrolling. Keeps tracks of scroll cursor, wrap-around and wrap-around/scroll delays
+*/
+
 #include "temperature_record.h"
 #include "draw.h"
 #include "pause.h"
@@ -8,7 +12,6 @@ int graphXCursor = 0;
 int graphScrollDelay = 500;//millisecs
 int graphWrapDelay = 2000;//millisecs
 
-// Returns true when scrolling in progress, false at wrap-around point
 void scrollGraph()
 {
     // If greater than 24 or at rouge value. 

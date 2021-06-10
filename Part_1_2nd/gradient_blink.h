@@ -1,5 +1,9 @@
 #pragma once
 
+/* 
+    Handles blinking behaviour of the color of interest within the temperature gradient
+*/
+
 #include "M5Atom.h"
 #include "pause.h"
 #include "draw.h"

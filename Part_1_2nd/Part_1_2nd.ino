@@ -10,8 +10,8 @@
 
 #include "M5Atom.h"
 
-bool standByFlag = true;
-unsigned int long lastSampled = 0;
+bool standByFlag = true; // True if awaiting button press to enter a mode
+unsigned int long lastSampled = 0; // Timestamp of last sensor reading
 
 void setup()
 {
@@ -44,7 +44,7 @@ void loop()
       case MODE_III: { currentTempColorPos = mapCircular(tempToGradientIndex(currentTemp)); break; }
       case MODE_IV: { graphXCursor = 0; updateHourlyAverages(); break; } // Temperature Graph
       case MODE_V: { break; }
-      case -1: { M5.dis.clear(); break;} // Off
+      case OFF: { M5.dis.clear(); break;} // Off
 
       default:
          break;
