@@ -23,7 +23,7 @@ Initially, the device is on mode I. In order to change between the modes, the sc
     
 ### Part I. The Second  
 ploading this code on the M5 Stack Atom allows to use it as a multi-purpose thermometer and temperature tracker  
-When the screen is deactivated, the device is measuring and recording the temperature every 15 minutes. To activate the device, its screen should be pressed. Once the device is activated, it can be used in five different modes:  
+When the screen is deactivated, the device is measuring and recording the temperature every 15 minutes. To activate the device, it should be held vertically upwards and its screen should be pressed. Once the device is activated, it can be used in five different modes:  
 &ensp; I.	Active Temperature: current temperature is shown on the screen of the device together with its unit, the current temperature is updated every 15 minutes. The color of the font depends on the temperature value being displayed, according to the following scale:  
 
 &ensp; ![numbers](https://user-images.githubusercontent.com/72690256/121437995-47b02100-c994-11eb-826c-563fe475dfc2.jpg)
@@ -63,6 +63,37 @@ To change between the above modes, the device should be tilted. To increase the 
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Mode 1 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Mode 2 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Mode 3 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Mode 4 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Mode 5  
 <img width="2076" alt="modes (2)" src="https://user-images.githubusercontent.com/72690256/121436349-78428b80-c991-11eb-9aa6-c9ec8244f1d1.png">  
 
-Once the mode is entered, the screen of the device should be clicked in order to enter it.
+Once the mode is entered, the screen of the device should be clicked in order to enter it.  
+  
+  ---  
+    
+### Part II  
+
+Uploading this code on the M5 Stack Atom allows to use it as an Indoor and Personal Weather station which measures temperature and humidity
+The temperature and humidity can be viewed on the device screen or through a webpage hosted on the device by using an electronic device such as a phone  
+  
+  
+#### Viewing data on the screen of M5 Stack Atom  
+When the screen is deactivated, the device is measuring and recording the temperature every 5 seconds. To activate the device, it should be held vertically upwards and its screen should be pressed. Once the device is activated, it can be used in different modes:  
+- Active Temperature: current temperature is shown on the screen of the device together with its unit, the current temperature is updated every 5 seconds. The color of the font depends on the temperature value being displayed, according to the same scale as modes I, II and III in Part I. The Second  
+- Average Temperature: the average temperature of the last 24 hours is shown on the screen together with its unit, the average temperature is updated every hour. The color of the font depends on the temperature value being displayed according to the same scale as before
+- Active Humidity: current humidity is shown on the screen of the device together with its unit, the current temperature is updated every 5 seconds. The color of the font depends on the humidity value being displayed
+- Average Humidity: the average humidity of the last 24 hours is shown on the screen together with its unit, the average humidity is updated every hour. The color of the font depends on the humidity value being displayed
+    
+    
+#### Viewing data on the website hosted by M5 Stack Atom  
+In order to view relevant information on an electronic device, first connect to a wifi called ***CkyBlue***  
+Open a web browser and load the following website:  
+&ensp;&ensp;&ensp; http://192.168.4.1  
+  
+  
+The website updates every 5 seconds, and on the screen the following data is visible:  
+- Current temperature in degrees Celsius with a colored stripe, whose length and color depends on the value of the current temperature. Current temperature is updated every 5 seconds  
+- Average temperature in degrees Celsius with a colored stripe, whose length and color depends on the value of the average temperature. in degrees Celsius with a colored stripe, whose length and color depends on the value of the average temperature. Average temperature is updated every hour
+- A chart representing the recorded temperatures, every 5 seconds a new value of current temperature is added to the chart. Every 75 seconds, after the chart consists of 15 values, the chart restarts and shows new values, untill there are 15 and it restarts again  
+- Current humidity with a colored stripe, whose length and color depends on the value of the current humidity. Current humidity is updated every 5 seconds  
+- Average humidity with a colored stripe, whose length and color depends on the value of the average humidity. Average humidity is updated every hour
+- A chart representing the recorded humdity, every 5 seconds a new value of current humidity is added to the chart. Every 75 seconds, after the chart consists of 15 values, the chart restarts and shows new values, untill there are 15 and it restarts again
+
 
 
