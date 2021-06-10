@@ -7,6 +7,10 @@
 
 CustomText tx;
 
+/* 
+  Modified "/Part_1_2nd.h/text_scrolling.h" to accomodate the HDC2080 and humidity values
+*/
+
 String outputString = "";
 int textCursor = 0;
 int textScrollDelay = 500;         // milliseconds
@@ -16,7 +20,6 @@ int textBlinkDelay = 400;
 
 void setText(float temp_in_cel, float humidity)
 {
-    // TODO Add Humidity
     outputString = getTempString(temp_in_cel) + " " + String(humidity) + "%";
     textCursor = 0;
     textBlinkFlag = false;

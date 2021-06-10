@@ -1,5 +1,9 @@
 #pragma once
 
+/* 
+  Modified "temperature_record.h" to accomodate the HDC2080 and humidity values
+*/
+
 // #include <HDC2080.h>
 
 // #define ADDR 0x40

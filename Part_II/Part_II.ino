@@ -14,10 +14,12 @@ const char* password = "Electrolysis";
 
 AsyncWebServer server(80);
 
+// Responses to GET requests for data   
 String getTemperature() { return String(round_to_2dp(currentTemp)); }
 String getAvgTemperature() { return String(round_to_2dp(getAverageTemperature())); }
 String getHourlyAverages() { updateHourlyAverages(); return getHourlyAveragesStr(); }
 
+// Simulating oscillating humidity values. TODO - Remove when migrating to HDC2080 sensor
 bool Hflag = true;
 float hVal = 11.2;
 String getHumidity() { 
@@ -29,6 +31,7 @@ String getHumidity() {
   return String(hVal); 
   }
 
+// Initializing Hotspot + Sensors + Setting up Async Server and responses. 
 void setup(){  
     if(!SPIFFS.begin()){ Serial.println("An Error has occurred while mounting SPIFFS"); return; }
 
@@ -90,7 +93,7 @@ void loop(){
     if (M5.Btn.wasPressed()) {
         textDisplay = !textDisplay;
 
-        // TODO- Switch to currentHumidity
+        // TODO- Switch to currentHumidity when migrating to sensor
         if (textDisplay) setText(currentTemp, hVal);
     }
 

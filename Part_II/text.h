@@ -1,6 +1,10 @@
 #pragma once
 #include "M5Atom.h"
 
+/* 
+  Modified "/Part_1_2nd.h/text.h" to accomodate new humidity related symbols
+*/
+
 // '*'s are intepreted as degrees symbol
 class CustomText{
   private:

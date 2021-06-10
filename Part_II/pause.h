@@ -1,6 +1,10 @@
 #pragma once
 #include "M5Atom.h"
 
+/* 
+    A non-blocking delay solution that is more scalable than millis
+*/
+
 int updateDelay = 50; // milliseconds
 
 int pauseTimer = 0; 
