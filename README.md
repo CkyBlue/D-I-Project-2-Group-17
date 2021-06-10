@@ -28,40 +28,39 @@ When the screen is deactivated, the device is measuring and recording the temper
 
 &ensp; ![numbers](https://user-images.githubusercontent.com/72690256/121437995-47b02100-c994-11eb-826c-563fe475dfc2.jpg)
 
-Number &ensp;&ensp;&ensp; Hexadecimal color code &ensp;&ensp;&ensp; Temperature in Celsius &ensp;&ensp;&ensp;	Temperature in Kelvins &ensp;&ensp;&ensp; Temperature in Fahrenheit  
-&ensp;&ensp; 1. &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 0x5350fd &nbsp;&nbsp;&nbsp;&nbsp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Below -20°C &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Below 253.15K	 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Below -4°F   
-&ensp;&ensp; 2. &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 0x7454fc &nbsp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [-15°C, -10°C) &nbsp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [258.15K, 263.15K) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [5°F, 14°F)    
-&ensp;&ensp; 3. &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 0x8f59fd &nbsp;&nbsp;&nbsp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [-10°C, -5°C) &nbsp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [263.15K, 268.15K) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [14°F, 23°F)    
-&ensp;&ensp; 4. &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 0xa961fe &nbsp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [-5°C, 0°C) &nbsp;&nbsp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [268.15K, 273.15K) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [23°F, 32°F)  
-&ensp;&ensp; 5. &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 0xc563ff &nbsp;&nbsp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [0°C, 5°C) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [273.15K, 278.15K) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [32°F, 41°F)   
-&ensp;&ensp; 6. &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 0xe26afe &nbsp;&nbsp;&nbsp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [5°C, 10°C) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [278.15K, 283.15K) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [41°F, 50°F)     
-&ensp;&ensp; 7. &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 0xe57fd7 &nbsp;&nbsp;&nbsp;&nbsp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [10°C, 15°C) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [283.15K, 288.15K) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [50°F, 59°F)     
-&ensp;&ensp; 8. &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 0xe88bb8 &nbsp;&nbsp;&nbsp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [15°C, 20°C) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [288.15K, 293.15K) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [59°F, 68°F)     
-&ensp;&ensp; 9. &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 0xeca191 &nbsp;&nbsp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [20°C, 25°C) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [293.15K, 298.15K) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [68°F, 77°F)    
-&ensp;&nbsp; 10. &nbsp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 0xedb668 &nbsp;&nbsp;&nbsp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [25°C, 30°C) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [298.15K, 303.15K) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [77°F, 86°F)    
-&ensp;&nbsp; 11. &nbsp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 0xeec34d &nbsp;&nbsp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [30°C, 35°C) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [303.15K, 308.15K) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [86°F, 95°F)    
-&ensp;&nbsp; 12. &nbsp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 0xddd13d &nbsp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [35°C, 40°C) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [308.15K, 313.15K) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [95°F, 104°F)      
-&ensp;&nbsp; 13. &nbsp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 0xbddb3f &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [40°C, 45°C) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [313.15K, 318.15K) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [104°F, 113°F)    
-&ensp;&nbsp; 14. &nbsp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 0x9be344 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [45°C, 50°C) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [318.15K, 323.15K) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [113°F, 122°F)       
-&ensp;&nbsp; 15. &nbsp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 0x79ec46 &nbsp;&nbsp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [50°C, 55°C) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [323.15K, 328.15K) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [122°F, 131°F)      
-&ensp;&nbsp; 16. &nbsp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 0x50f54c &nbsp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Above or 55°C &nbsp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Above or 328.15K &nbsp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Above or 131°F   
+&ensp;&ensp;&ensp; 1. &ensp;&ensp; Below -20°C / Below 253.15K / Below -4°F  
+&ensp;&ensp;&ensp; 2. &ensp;&ensp; [-15°C, -10°C) / [258.15K, 263.15K) / [5°F, 14°F)  
+&ensp;&ensp;&ensp; 3. &ensp;&ensp; [-10°C, -5°C) / [263.15K, 268.15K) / [14°F, 23°F)  
+&ensp;&ensp;&ensp; 4. &ensp;&ensp; [-5°C, 0°C) / [268.15K, 273.15K) / [23°F, 32°F)  
+&ensp;&ensp;&ensp; 5. &ensp;&ensp; [0°C, 5°C) / [273.15K, 278.15K) / [32°F, 41°F)   
+&ensp;&ensp;&ensp; 6. &ensp;&ensp; [5°C, 10°C) / [278.15K, 283.15K) / [41°F, 50°F)     
+&ensp;&ensp;&ensp; 7. &ensp;&ensp; [10°C, 15°C) / [283.15K, 288.15K) / [50°F, 59°F)     
+&ensp;&ensp;&ensp; 8. &ensp;&ensp; [15°C, 20°C) / [288.15K, 293.15K) / [59°F, 68°F)     
+&ensp;&ensp;&ensp; 9. &ensp;&ensp; [20°C, 25°C) / [293.15K, 298.15K) / [68°F, 77°F)    
+&ensp;&ensp;&ensp; 10. &ensp; [25°C, 30°C) / [298.15K, 303.15K) / [77°F, 86°F)    
+&ensp;&ensp;&ensp; 11. &ensp; [30°C, 35°C) / [303.15K, 308.15K) / [86°F, 95°F)    
+&ensp;&ensp;&ensp; 12. &ensp; [35°C, 40°C) / [308.15K, 313.15K) / [95°F, 104°F)      
+&ensp;&ensp;&ensp; 13. &ensp; [40°C, 45°C) / [313.15K, 318.15K) / [104°F, 113°F)    
+&ensp;&ensp;&ensp; 14. &ensp; [45°C, 50°C) / [318.15K, 323.15K) / [113°F, 122°F)       
+&ensp;&ensp;&ensp; 15. &ensp; [50°C, 55°C) / [323.15K, 328.15K) / [122°F, 131°F)      
+&ensp;&ensp;&ensp; 16. &ensp; Above or equal to 55°C / Above or equal to 328.15K / Above or equal to 131°F   
 
 &ensp; II.	Average Temperature: the average temperature of the last 24 hours is shown on the screen together with its unit, the average temperature is updated every hour. The color of the font depends on the temperature value being displayed according to the same scale as in mode I  
 &ensp; III.	Color Scale of Temperature: the color scale from modes I and II is displayed on the screen of the device, the LED with a color representing the current temperature blinks  
 &ensp; IV.	Graph of Temperature: A histogram is displayed on the screen of the device. Each bar of the histogram represents an hourly average temperature calculated based on the four readings taken every 15 minutes. Bars have heights of 1, 2, 3, 4, or 5 LEDs, according to the following scale:  
 
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Below -10°C &nbsp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [-10°C, 10°C) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [10°C, 30°C) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [30°C, 50°C) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&nbsp; Above or 50°C  
-&ensp;&ensp;&ensp;&ensp;&ensp; Below 263.15K &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [263.15K, 283.15K) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [283.15K, 303.15K) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [303.15K, 323.15K) &nbsp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Above or 323.15K  
-&nbsp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Below 14°F &nbsp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [14°F, 50 °F) &nbsp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [50°F, 86°F) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; [86°F, 122°F) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Above or 122°F  
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 0x5350fd &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 0xc563ff &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 0xeca191 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 0xddd13d &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 0x50f54c  
-<img width="1938" alt="graph" src="https://user-images.githubusercontent.com/72690256/121437520-898c9780-c993-11eb-9bfc-af00eaa4d29d.png">  
-  
+![graph](https://user-images.githubusercontent.com/72690256/121479292-efe8d880-c9da-11eb-9e19-a2030db04f11.jpg)  
+&ensp;&ensp;&ensp; 1. &ensp;&ensp; Below -10°C / Below 263.15K / Below 14°F  
+&ensp;&ensp;&ensp; 2. &ensp;&ensp; [-10°C, 10°C) / [263.15K, 283.15K) / [14°F, 50 °F)  
+&ensp;&ensp;&ensp; 3. &ensp;&ensp; [10°C, 30°C) / [283.15K, 303.15K) / [50°F, 86°F)  
+&ensp;&ensp;&ensp; 4. &ensp;&ensp; [30°C, 50°C) / [303.15K, 323.15K) / [86°F, 122°F)  
+&ensp;&ensp;&ensp; 5. &ensp;&ensp; Above or equal to 50°C / Above or equal to 323.15K / Above or equal to 122°F  
+
 &ensp; V.	Change Units: By clicking the screen of the device, units can be changed between degree Celsius, Kelvin and Fahrenheit  
 
 To change between the above modes, the device should be tilted. To increase the mode number, tilt to the right and to decrease, tilt to the left. When a given mode is entered, a particular LED turns on, according to the following system:
-
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Mode 1 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Mode 2 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Mode 3 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Mode 4 &nbsp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Mode 5  
-<img width="2076" alt="modes (2)" src="https://user-images.githubusercontent.com/72690256/121436349-78428b80-c991-11eb-9aa6-c9ec8244f1d1.png">  
+ 
+![modes LED](https://user-images.githubusercontent.com/72690256/121478738-63d6b100-c9da-11eb-8b0c-d8bec353b7c3.jpg)
 
 Once the mode is entered, the screen of the device should be clicked in order to enter it.  
   
@@ -73,14 +72,6 @@ Uploading this code on the M5 Stack Atom allows to use it as an Indoor and Perso
 The temperature and humidity can be viewed on the device screen or through a webpage hosted on the device by using an electronic device such as a phone  
   
   
-#### Viewing data on the screen of M5 Stack Atom  
-When the screen is deactivated, the device is measuring and recording the temperature every 5 seconds. To activate the device, it should be held vertically upwards and its screen should be pressed. Once the device is activated, it can be used in different modes:  
-- Active Temperature: current temperature is shown on the screen of the device together with its unit, the current temperature is updated every 5 seconds. The color of the font depends on the temperature value being displayed, according to the same scale as modes I, II and III in Part I. The Second  
-- Average Temperature: the average temperature of the last 24 hours is shown on the screen together with its unit, the average temperature is updated every hour. The color of the font depends on the temperature value being displayed according to the same scale as before
-- Active Humidity: current humidity is shown on the screen of the device together with its unit, the current temperature is updated every 5 seconds. The color of the font depends on the humidity value being displayed
-- Average Humidity: the average humidity of the last 24 hours is shown on the screen together with its unit, the average humidity is updated every hour. The color of the font depends on the humidity value being displayed
-    
-    
 #### Viewing data on the website hosted by M5 Stack Atom  
 In order to view relevant information on an electronic device, first connect to a wifi called ***CkyBlue***  
 Open a web browser and load the following website:  
@@ -88,12 +79,13 @@ Open a web browser and load the following website:
   
   
 The website updates every 5 seconds, and on the screen the following data is visible:  
-- Current temperature in degrees Celsius with a colored stripe, whose length and color depends on the value of the current temperature. Current temperature is updated every 5 seconds  
-- Average temperature in degrees Celsius with a colored stripe, whose length and color depends on the value of the average temperature. in degrees Celsius with a colored stripe, whose length and color depends on the value of the average temperature. Average temperature is updated every hour
-- A chart representing the recorded temperatures, every 5 seconds a new value of current temperature is added to the chart. Every 75 seconds, after the chart consists of 15 values, the chart restarts and shows new values, untill there are 15 and it restarts again  
-- Current humidity with a colored stripe, whose length and color depends on the value of the current humidity. Current humidity is updated every 5 seconds  
-- Average humidity with a colored stripe, whose length and color depends on the value of the average humidity. Average humidity is updated every hour
-- A chart representing the recorded humdity, every 5 seconds a new value of current humidity is added to the chart. Every 75 seconds, after the chart consists of 15 values, the chart restarts and shows new values, untill there are 15 and it restarts again
-
-
+- Current temperature in degrees Celsius with a colored stripe, whose length and color depends on the value of the current temperature. Current temperature is updated every 5 seconds. Below the stripe, there is a chart representing the recorded temperatures, every 5 seconds a new value of current temperature is added to the chart. Every 75 seconds, after the chart consists of 15 values, the chart restarts and shows new values, untill there are 15 and it restarts again  
+- Average temperature in degrees Celsius with a colored stripe, whose length and color depends on the value of the average temperature. Average temperature is updated every hour
+- Current humidity with a colored stripe, whose length and color depends on the value of the current humidity. Current humidity is updated every 5 seconds. Below the stripe, there is a chart representing the recorded humidity values, every 5 seconds a new value of current humidity is added to the chart. Every 75 seconds, after the chart consists of 15 values, the chart restarts and shows new values, untill there are 15 and it restarts again
+- Change units mode, where the units of temperature can be changed between Celsius, Kelvin and Fahrenheit scales. The temperature data with a different unit than Celsius can only be viewed on the screen of M5 Stack Atom  
+  
+  
+#### Viewing data on the screen of M5 Stack Atom  
+When the screen is deactivated, the device is measuring and recording the temperature every 5 seconds. To activate the device, its screen should be pressed. Once the device is activated, it shows the current temperature followed by a current humidity value. By default, temperature in degrees Celsius is displayed, but the unit can be changed to Kelvin or Fahrenheit scale through a website as mentioned above
+  
 
