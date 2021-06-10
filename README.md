@@ -68,7 +68,7 @@ Once the mode is entered, the screen of the device should be clicked in order to
     
 ### Part II  
 
-Uploading this code on the M5 Stack Atom allows to use it as an Indoor and Personal Weather station which measures temperature and humidity
+Uploading this code on the M5 Stack Atom allows to use it as an Indoor and Personal Weather station, which measures temperature and humidity.
 The temperature and humidity can be viewed on the device screen or through a webpage hosted on the device by using an electronic device such as a phone  
   
   
@@ -78,14 +78,14 @@ Open a web browser and load the following website:
 &ensp;&ensp;&ensp; http://192.168.4.1  
   
   
-The website updates every 5 seconds, and on the screen the following data is visible:  
-- Current temperature in degrees Celsius with a colored stripe, whose length and color depends on the value of the current temperature. Current temperature is updated every 5 seconds. Below the stripe, there is a chart representing the recorded temperatures, every 5 seconds a new value of current temperature is added to the chart. Every 75 seconds, after the chart consists of 15 values, the chart restarts and shows new values, untill there are 15 and it restarts again  
-- Average temperature in degrees Celsius with a colored stripe, whose length and color depends on the value of the average temperature. Average temperature is updated every hour
-- Current humidity with a colored stripe, whose length and color depends on the value of the current humidity. Current humidity is updated every 5 seconds. Below the stripe, there is a chart representing the recorded humidity values, every 5 seconds a new value of current humidity is added to the chart. Every 75 seconds, after the chart consists of 15 values, the chart restarts and shows new values, untill there are 15 and it restarts again
+The website updates every 5 seconds, and the following data can be viewed:  
+- Current temperature in degrees Celsius with a colored stripe, whose length and color depends on the value of the current temperature. Current temperature is updated every 5 seconds. Below the stripe, there is a chart representing the recorded temperatures. Every 5 seconds, a new value of current temperature is added to the chart
+- Average temperature in degrees Celsius with a colored stripe, whose length and color depends on the value of the average temperature. Below the stripe, there is a chart representing the average temperatures from last hours. Average temperature is calculated after every hour, using the 900 temperature values taken during the interval and it is added to the chart.
+- Current humidity, expressed in percentage, with a colored stripe, whose length and color depends on the value of the current humidity. Current humidity is updated every 5 seconds. Below the stripe, there is a chart representing the recorded humidity values. Every 5 secondsc a new value of current humidity is added to the chart
 - Change units mode, where the units of temperature can be changed between Celsius, Kelvin and Fahrenheit scales. The temperature data with a different unit than Celsius can only be viewed on the screen of M5 Stack Atom  
   
   
 #### Viewing data on the screen of M5 Stack Atom  
-When the screen is deactivated, the device is measuring and recording the temperature every 5 seconds. To activate the device, its screen should be pressed. Once the device is activated, it shows the current temperature followed by a current humidity value. By default, temperature in degrees Celsius is displayed, but the unit can be changed to Kelvin or Fahrenheit scale through a website as mentioned above
+When the screen is deactivated, the device is measuring and recording the temperature every 5 seconds. To activate the device, its screen should be pressed. Once the device is activated, it shows the current temperature followed by a current humidity value. After showing each value once, the device's screen is deactivated again. By default, temperature is in degrees Celsius and humidity in percenateg. The temperature unit can be changed to Kelvin or Fahrenheit scale through a website as mentioned above
   
 
