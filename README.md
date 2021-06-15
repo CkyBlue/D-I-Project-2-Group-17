@@ -6,18 +6,8 @@ Kojo Vandyck
 Rami Richani Hamdan  
 Sakrit Karmacharya  
   
----  
-  
-The following libraries are required in order for the codes to work:
-- ***M5Atom.h***, available at: https://github.com/m5stack/M5Atom  
-- ***FastLED.h***, available at: https://github.com/FastLED/FastLED  
-- ***ArduinoQueue.h***, available at: https://github.com/EinarArnason/ArduinoQueue  
-- ***ESPAsyncWebServer.h***, available at: https://github.com/me-no-dev/ESPAsyncWebServer  
-- ***SPIFFS.h***, available at: https://github.com/espressif/arduino-esp32/blob/master/libraries/SPIFFS/src/SPIFFS.h  
-- ***HDC2080.h***, available at: https://github.com/tinkeringtech/HDC2080_breakout  
-  
   ---  
-    
+  
 ### Part I. The First  
   
 Uploading this code on the M5 Stack Atom allows to use it as a bike light  
