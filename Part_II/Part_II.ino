@@ -10,6 +10,7 @@
 #include "pause.h"
 
 const char* ssid = "CkyBlue";
+const char* password = "Electrolysis";
 
 AsyncWebServer server(80);
 
@@ -17,19 +18,27 @@ AsyncWebServer server(80);
 String getTemperature() { return String(round_to_2dp(currentTemp)); }
 String getAvgTemperature() { return String(round_to_2dp(getAverageTemperature())); }
 String getHourlyAverages() { updateHourlyAverages(); return getHourlyAveragesStr(); }
-String getHumidity() { return String(currentHumidity); }
+
+// Simulating oscillating humidity values. TODO - Remove when migrating to HDC2080 sensor
+bool Hflag = true;
+float hVal = 11.2;
+String getHumidity() { 
+  Hflag = !Hflag;
+  if (Hflag)
+    hVal += 2.1f;
+  else
+    hVal -= 2.1f;
+  return String(hVal); 
+  }
 
 // Initializing Hotspot + Sensors + Setting up Async Server and responses. 
 void setup(){  
     if(!SPIFFS.begin()){ Serial.println("An Error has occurred while mounting SPIFFS"); return; }
 
-    initHDCSensor();
-
     M5.begin(true, true, true);
     M5.IMU.Init();
 
     updateTemperatureData();
-    updateHumidity();
     enqueueTemperatureData();
 
     M5.dis.clear();
@@ -76,7 +85,6 @@ bool textDisplay = false;
 void loop(){
     if ((millis() - lastSampled) > (samplingDelay * 1000)) {
       updateTemperatureData();
-      updateHumidity();
       enqueueTemperatureData();
 
       lastSampled = millis();
@@ -85,7 +93,8 @@ void loop(){
     if (M5.Btn.wasPressed()) {
         textDisplay = !textDisplay;
 
-        if (textDisplay) setText(currentTemp, currentHumidity);
+        // TODO- Switch to currentHumidity when migrating to sensor
+        if (textDisplay) setText(currentTemp, hVal);
     }
 
     if (isPaused()) return;
