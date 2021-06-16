@@ -18,18 +18,7 @@ AsyncWebServer server(80);
 String getTemperature() { return String(round_to_2dp(currentTemp)); }
 String getAvgTemperature() { return String(round_to_2dp(getAverageTemperature())); }
 String getHourlyAverages() { updateHourlyAverages(); return getHourlyAveragesStr(); }
-
-// Simulating oscillating humidity values. TODO - Remove when migrating to HDC2080 sensor
-bool Hflag = true;
-float hVal = 11.2;
-String getHumidity() { 
-  Hflag = !Hflag;
-  if (Hflag)
-    hVal += 2.1f;
-  else
-    hVal -= 2.1f;
-  return String(hVal); 
-  }
+String getHumidity() { return String(round_to_2dp(currentHumidity)); }
 
 // Initializing Hotspot + Sensors + Setting up Async Server and responses. 
 void setup(){  
@@ -39,6 +28,7 @@ void setup(){
     M5.IMU.Init();
 
     updateTemperatureData();
+    updateHumidity();
     enqueueTemperatureData();
 
     M5.dis.clear();
@@ -85,6 +75,7 @@ bool textDisplay = false;
 void loop(){
     if ((millis() - lastSampled) > (samplingDelay * 1000)) {
       updateTemperatureData();
+      updateHumidity();
       enqueueTemperatureData();
 
       lastSampled = millis();
@@ -93,8 +84,7 @@ void loop(){
     if (M5.Btn.wasPressed()) {
         textDisplay = !textDisplay;
 
-        // TODO- Switch to currentHumidity when migrating to sensor
-        if (textDisplay) setText(currentTemp, hVal);
+        if (textDisplay) setText(currentTemp, currentHumidity);
     }
 
     if (isPaused()) return;
